@@ -20,8 +20,8 @@ interface SimCardTraitsProps {
 export default function SimCardTraits({ traits }: SimCardTraitsProps) {
   return (
     <div className="mb-4 overflow-hidden bg-white">
-      <div className="w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: TEAL }}>
-        <h3 className="font-title font-semibold text-black text-[15px] leading-none uppercase tracking-[0.2em]" style={{ transform: 'translateY(-3px)' }}>TRAITS</h3>
+      <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: TEAL }}>
+        <h3 className="font-title font-semibold text-black text-[15px] leading-none uppercase tracking-[0.2em]">TRAITS</h3>
       </div>
       <div className="px-5 py-2.5 bg-white">
       <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${TRAITS_GRID_COLS}, minmax(0, 1fr))` }}>

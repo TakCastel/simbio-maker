@@ -55,6 +55,14 @@ export default function PreviewSection({
           clonedEl.querySelectorAll('img').forEach((img) => {
             (img as HTMLImageElement).crossOrigin = 'anonymous';
           });
+          // Corriger le centrage vertical des titres uniquement dans l'image exportée (pas dans la vue HTML)
+          clonedEl.querySelectorAll('.sim-card-title-bar').forEach((bar) => {
+            const div = bar as HTMLElement;
+            div.style.paddingTop = '8px';
+            div.style.paddingBottom = '12px';
+            const h3 = div.querySelector('h3');
+            if (h3) (h3 as HTMLElement).style.transform = 'translateY(-5px)';
+          });
         },
       });
       const dataUrl = canvas.toDataURL('image/png');

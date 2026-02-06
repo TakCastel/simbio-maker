@@ -4,7 +4,6 @@ import React, { useRef } from 'react';
 import { Settings2, Download, Upload } from 'lucide-react';
 import { SimProfile } from '@/types';
 import { downloadProfileAsJson, normalizeImportedProfile } from '@/lib/simStorage';
-import Tooltip from '@/components/Tooltip';
 
 interface PageHeaderProps {
   isEditorOpen: boolean;
@@ -70,26 +69,22 @@ export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onIm
             className="hidden"
             onChange={handleImportFile}
           />
-          <Tooltip label="Import a sim from a JSON file">
-            <button
-              type="button"
-              onClick={handleImportClick}
-              className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all"
-            >
-              <Upload size={18} />
-              <span className="hidden sm:inline">Import</span>
-            </button>
-          </Tooltip>
-          <Tooltip label="Download sim as JSON">
-            <button
-              type="button"
-              onClick={handleExportJson}
-              className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all"
-            >
-              <Download size={18} />
-              <span className="hidden sm:inline">Export</span>
-            </button>
-          </Tooltip>
+          <button
+            type="button"
+            onClick={handleImportClick}
+            className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all"
+          >
+            <Upload size={18} />
+            <span className="hidden sm:inline">Import JSON</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleExportJson}
+            className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all"
+          >
+            <Download size={18} />
+            <span className="hidden sm:inline">Export JSON</span>
+          </button>
           <button
             type="button"
             onClick={onToggleEditor}
