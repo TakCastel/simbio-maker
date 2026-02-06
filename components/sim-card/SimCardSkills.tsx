@@ -18,7 +18,7 @@ export default function SimCardSkills({ skills }: SimCardSkillsProps) {
       <div className="px-5 py-2.5 bg-white">
       <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         {skills.map((skill) => (
-          <div key={skill.id} className="flex items-center gap-1">
+          <div key={skill.id} className="flex items-center gap-3">
             <img
               src={skill.icon}
               alt={skill.name}
