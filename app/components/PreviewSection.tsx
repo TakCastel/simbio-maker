@@ -118,7 +118,11 @@ export default function PreviewSection({
             div.style.paddingTop = '8px';
             div.style.paddingBottom = '12px';
             const span = div.querySelector('span');
-            if (span) (span as HTMLElement).style.transform = 'translateY(-8px)';
+            if (span) (span as HTMLElement).style.transform = 'translateY(-10px)';
+          });
+          // Numéros (niveaux de compétences, etc.) : remonter dans l'image exportée
+          clonedEl.querySelectorAll('.sim-card-skill-level').forEach((el) => {
+            (el as HTMLElement).style.transform = 'translateY(-10px)';
           });
           // Texte des diplômes : remonter + éviter le crop (tout le texte visible dans l'export)
           clonedEl.querySelectorAll('.sim-card-left-column').forEach((col) => {

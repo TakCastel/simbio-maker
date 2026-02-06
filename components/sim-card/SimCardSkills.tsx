@@ -25,7 +25,7 @@ export default function SimCardSkills({ skills }: SimCardSkillsProps) {
               className="w-12 h-12 object-contain shrink-0"
             />
             <span
-              className="font-bold text-2xl tabular-nums"
+              className="sim-card-skill-level font-bold text-2xl tabular-nums"
               style={{ color: SKILL_NUMBER_BLUE }}
             >
               {skill.level}
