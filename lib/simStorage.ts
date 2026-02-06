@@ -1,5 +1,5 @@
-import type { SimProfile } from '@/types';
-import { EMPTY_PROFILE } from '@/constants';
+import type { SimProfile, Trait, Skill, Aspiration } from '@/types';
+import { EMPTY_PROFILE, AVAILABLE_TRAITS, AVAILABLE_SKILLS, AVAILABLE_ASPIRATIONS } from '@/constants';
 
 export const STORAGE_KEY = 'simbio-maker-profile';
 
@@ -24,7 +24,55 @@ function hasSimProfileShape(obj: unknown): obj is Record<string, unknown> {
   );
 }
 
-/** Merges an imported object with the empty profile to ensure all fields are present */
+/** Enrich a raw trait with full data from constants so tooltips (description, type) are preserved after import */
+function enrichTrait(raw: unknown): Trait | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const id = typeof o.id === 'string' ? o.id : null;
+  if (!id) return null;
+  const full = AVAILABLE_TRAITS.find((t) => t.id === id);
+  if (full) return full;
+  // Keep partial trait if not in constants (custom/legacy)
+  if (typeof o.name === 'string' && typeof o.icon === 'string') {
+    return {
+      id,
+      name: o.name,
+      description: typeof o.description === 'string' ? o.description : '',
+      icon: o.icon,
+      type: (typeof o.type === 'string' ? o.type : 'misc') as Trait['type'],
+    };
+  }
+  return null;
+}
+
+/** Enrich a raw skill with full data from constants */
+function enrichSkill(raw: unknown): Skill | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const id = typeof o.id === 'string' ? o.id : null;
+  const level = typeof o.level === 'number' && o.level >= 1 && o.level <= 10 ? o.level : 1;
+  if (!id) return null;
+  const base = AVAILABLE_SKILLS.find((s) => s.id === id);
+  if (base) return { ...base, level };
+  if (typeof (o as { name?: string }).name === 'string' && typeof (o as { icon?: string }).icon === 'string')
+    return { id, name: (o as { name: string }).name, level, icon: (o as { icon: string }).icon };
+  return null;
+}
+
+/** Enrich a raw aspiration with full data from constants */
+function enrichAspiration(raw: unknown): Aspiration | null {
+  if (raw == null || typeof raw !== 'object') return null;
+  const o = raw as Record<string, unknown>;
+  const id = typeof o.id === 'string' ? o.id : null;
+  if (!id) return null;
+  const full = AVAILABLE_ASPIRATIONS.find((a) => a.id === id);
+  if (full) return full;
+  if (typeof o.name === 'string' && typeof o.icon === 'string')
+    return { id, name: o.name, icon: o.icon, category: typeof o.category === 'string' ? o.category : undefined };
+  return null;
+}
+
+/** Merges an imported object with the empty profile to ensure all fields are present. Enriches traits/skills/aspirations from constants so tooltips work after import. */
 export function normalizeImportedProfile(raw: unknown): SimProfile {
   if (!hasSimProfileShape(raw)) {
     return { ...EMPTY_PROFILE };
@@ -42,14 +90,18 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
       ? (raw.career as SimProfile['career'])
       : EMPTY_PROFILE.career;
 
+  const rawTraits = Array.isArray(raw.traits) ? raw.traits : [];
+  const rawSkills = Array.isArray(raw.skills) ? raw.skills : [];
+  const rawAspirations = Array.isArray(raw.aspirations) ? raw.aspirations : [];
+
   return {
     firstName: String(raw.firstName),
     lastName: String(raw.lastName),
     generation: String(raw.generation),
     avatarUrl: typeof raw.avatarUrl === 'string' ? raw.avatarUrl : raw.avatarUrl === null ? null : EMPTY_PROFILE.avatarUrl,
-    traits: Array.isArray(raw.traits) ? (raw.traits as SimProfile['traits']) : [],
-    skills: Array.isArray(raw.skills) ? (raw.skills as SimProfile['skills']) : [],
-    aspirations: Array.isArray(raw.aspirations) ? (raw.aspirations as SimProfile['aspirations']) : [],
+    traits: rawTraits.map(enrichTrait).filter((t): t is Trait => t != null),
+    skills: rawSkills.map(enrichSkill).filter((s): s is Skill => s != null),
+    aspirations: rawAspirations.map(enrichAspiration).filter((a): a is Aspiration => a != null),
     career,
     degrees: Array.isArray(raw.degrees) ? (raw.degrees as string[]) : [],
     lifestyles: Array.isArray(raw.lifestyles) ? (raw.lifestyles as string[]) : [],

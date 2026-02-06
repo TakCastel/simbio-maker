@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef } from 'react';
-import html2canvas from 'html2canvas';
 import { Download } from 'lucide-react';
 import SimsCard from '@/components/SimsCard';
 import { SimProfile } from '@/types';
@@ -25,11 +24,38 @@ export default function PreviewSection({
     if (!cardRef.current) return;
     onDownloadStart();
     try {
-      await new Promise((r) => setTimeout(r, 100));
-      const canvas = await html2canvas(cardRef.current, {
+      const el = cardRef.current;
+      // Preload all images in the card so they are ready for html2canvas (avoids blank/tainted canvas)
+      const imgs = el.querySelectorAll<HTMLImageElement>('img[src]');
+      await Promise.all(
+        Array.from(imgs).map(
+          (img) =>
+            new Promise<void>((resolve, reject) => {
+              if (img.complete && img.naturalWidth > 0) {
+                resolve();
+                return;
+              }
+              const loader = new Image();
+              loader.crossOrigin = 'anonymous';
+              loader.onload = () => resolve();
+              loader.onerror = () => resolve(); // continue even if one fails (e.g. placeholder)
+              loader.src = img.src;
+            })
+        )
+      );
+      const { default: html2canvas } = await import('html2canvas');
+      await new Promise((r) => setTimeout(r, 200));
+      const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
+        imageTimeout: 0,
+        logging: false,
+        onclone(_, clonedEl) {
+          clonedEl.querySelectorAll('img').forEach((img) => {
+            (img as HTMLImageElement).crossOrigin = 'anonymous';
+          });
+        },
       });
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -38,7 +64,12 @@ export default function PreviewSection({
       link.click();
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Could not download. Try using a local image for the avatar.');
+      const hasAvatar = Boolean(profile.avatarUrl?.trim());
+      alert(
+        hasAvatar
+          ? 'Could not download. Try using a local image for the avatar.'
+          : 'Could not generate image. Please try again or use another browser.'
+      );
     } finally {
       onDownloadEnd();
     }

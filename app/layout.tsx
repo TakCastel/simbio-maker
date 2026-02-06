@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: 'Sims Bio Maker',
   description: 'Create your Sim legacy card',
   icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+    icon: '/icon.webp',
+    apple: '/icon.webp',
   },
 };
 

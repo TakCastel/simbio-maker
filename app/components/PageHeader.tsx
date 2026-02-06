@@ -46,7 +46,7 @@ export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onIm
       <div className="w-full px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <img
-            src="/icon.png"
+            src="/icon.webp"
             alt=""
             width={40}
             height={40}

@@ -12,8 +12,8 @@ interface SimCardLeftSectionProps {
 export default function SimCardLeftSection({ title, children }: SimCardLeftSectionProps) {
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full bg-white py-2.5 px-6 text-center">
-        <h3 className="font-title font-semibold text-black text-[15px] uppercase tracking-[0.2em] whitespace-nowrap">
+      <div className="w-full bg-white py-2.5 px-6 flex items-center justify-center min-h-[42px]">
+        <h3 className="font-title font-semibold text-black text-[15px] leading-none uppercase tracking-[0.2em] whitespace-nowrap" style={{ transform: 'translateY(-3px)' }}>
           {title}
         </h3>
       </div>

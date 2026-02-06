@@ -1,6 +1,6 @@
 /**
  * Icon paths.
- * Icons are in public/icons/{category}/{filename}.png
+ * Icons are in public/icons/{category}/{filename}.webp
  * Category can contain slashes for subfolders (e.g. "Reward Traits/Reward Store").
  */
 const ICON_BASE = '/icons';
