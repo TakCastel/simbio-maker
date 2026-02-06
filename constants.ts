@@ -53,7 +53,7 @@ function aspiration(
   return { id, name, icon: getIconUrl(folder, filename), category };
 }
 
-/** All The Sims 4 traits — descriptions from https://sims.fandom.com/wiki/Trait_(The_Sims_4), Build-A-Sim Icon Pack icons */
+/** All The Sims 4 traits — descriptions from https://sims.fandom.com/wiki/Trait_(The_Sims_4), icons in public/icons */
 export const AVAILABLE_TRAITS: Trait[] = [
   // ═══ PERSONALITY — Emotional (wiki: Trait (The Sims 4)) ═══
   trait('ambitious', 'Ambitious', 'These Sims gain powerful Moodlets from career success, gain negative Moodlets from career failure, and may become Tense if not promoted.', T, 'Ambitious.png', 'emotional'),
@@ -728,7 +728,7 @@ export const AVAILABLE_ASPIRATIONS: Aspiration[] = [
   aspiration('tutorialchef', 'Chef', A_TUT, 'Chef.png', 'Tutorial'),
 ];
 
-/** Subfolder for career icons (Build-A-Sim Icon Pack) */
+/** Subfolder for career icons */
 const C_AFTER = 'Careers/Afterschool Activities';
 
 export const CAREER_ICONS: { name: string; icon: string }[] = [
@@ -910,8 +910,8 @@ export const LIFESTYLE_OPTIONS: { name: string; icon: string }[] = [
   { name: 'Workaholic', icon: getIconUrl(L, 'Workaholic.png') },
 ];
 
-/** Icons from Build-A-Sim Icon Pack (public/) — Perk Trees/Celebrities/Ranks (Fame levels, Get Famous) */
-const CELEBRITY_RANKS_PATH = '/Build-A-Sim Icon Pack/Perk Trees/Celebrities/Ranks';
+/** Celebrity rank icons (Fame levels, Get Famous) — public/icons/Perk Trees/Celebrities/Ranks */
+const CELEBRITY_RANKS_PATH = '/icons/Perk Trees/Celebrities/Ranks';
 function getCelebrityRankIcon(filename: string): string {
   const base = CELEBRITY_RANKS_PATH.split('/').map((p) => encodeURIComponent(p)).join('/');
   return `${base}/${encodeURIComponent(filename)}`;

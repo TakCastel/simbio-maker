@@ -241,8 +241,8 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
         )}
 
         {activeTab === 'traits' && (
-          <div className="grid grid-cols-2 gap-6 h-[calc(100vh-220px)] min-h-[400px]">
-            <div className="flex flex-col min-h-0 border-r border-slate-200 pr-6">
+          <div className="flex flex-col gap-4 h-[calc(100vh-220px)] min-h-[400px]">
+            <div className="flex flex-col min-h-0 flex-1 border-b border-slate-200 pb-4">
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2 shrink-0">Traits ({profile.traits.length}/15)</label>
               <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0 custom-scrollbar">
                 {[
@@ -274,7 +274,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                   return (
                     <div key={type}>
                       <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 sticky top-0 bg-white py-1 z-10">{label}</h4>
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                         {traitsInCategory.map((trait) => {
                           const isSelected = profile.traits.some((t) => t.id === trait.id);
                           return (
@@ -298,7 +298,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
               </div>
             </div>
 
-            <div className="flex flex-col min-h-0">
+            <div className="flex flex-col min-h-0 flex-1">
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2 shrink-0">Completed aspirations</label>
               <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0 custom-scrollbar">
                 {(() => {

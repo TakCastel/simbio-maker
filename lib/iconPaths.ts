@@ -1,5 +1,5 @@
 /**
- * Build-A-Sim Icon Pack paths.
+ * Icon paths.
  * Icons are in public/icons/{category}/{filename}.png
  * Category can contain slashes for subfolders (e.g. "Reward Traits/Reward Store").
  */
@@ -20,7 +20,7 @@ export const ICON_CATEGORIES = {
   milestones: 'Milestones',
 } as const;
 
-/** Subfolders for aspirations (Build-A-Sim Icon Pack) */
+/** Subfolders for aspirations */
 export const ASPIRATION_ICON_CATEGORIES = {
   main: 'Aspirations',
   children: "Aspirations/Children's Aspirations",
@@ -28,7 +28,7 @@ export const ASPIRATION_ICON_CATEGORIES = {
   tutorial: 'Aspirations/Tutorial Aspirations',
 } as const;
 
-/** Icon categories for traits (Build-A-Sim Icon Pack) */
+/** Icon categories for traits */
 export const TRAIT_ICON_CATEGORIES = {
   main: 'Main Traits',
   bonus: 'Bonus Traits',
