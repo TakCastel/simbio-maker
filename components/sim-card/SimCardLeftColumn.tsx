@@ -16,7 +16,7 @@ interface SimCardLeftColumnProps {
 export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
   return (
     <div
-      className="w-2/5 shrink-0 flex flex-col pt-0 pb-0 gap-1 px-5"
+      className="sim-card-left-column w-2/5 shrink-0 flex flex-col pt-0 pb-0 gap-1 px-5"
       style={{ backgroundColor: TEAL }}
     >
       <div className="w-full flex justify-center pt-10 pb-8">
@@ -43,14 +43,14 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
 
       <SimCardLeftSection title="Degrees">
         {profile.degrees.length > 0 ? (
-          <div className="flex flex-col gap-1.5 w-full">
+          <div className="sim-card-degrees-content flex flex-col gap-1.5 w-full">
             {profile.degrees.map((iconUrl, i) => {
               const degree = DEGREE_OPTIONS.find((d) => d.icon === iconUrl);
               const label = degree?.name ?? 'Degree';
               return (
-                <div key={i} className="flex items-center gap-3">
+                <div key={i} className="sim-card-degree-row flex items-center gap-3">
                   <img src={iconUrl} alt="" className="w-10 h-10 object-contain shrink-0" />
-                  <span className="text-black text-sm font-medium text-left flex-1 min-w-0 truncate">{label}</span>
+                  <span className="sim-card-degree-label text-black text-sm font-medium text-left flex-1 min-w-0 truncate">{label}</span>
                 </div>
               );
             })}

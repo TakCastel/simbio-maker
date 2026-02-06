@@ -97,12 +97,45 @@ export default function PreviewSection({
               el.removeAttribute('crossorigin');
             }
           });
+          // Barres de titre des sections : alignement vertical comme en HTML (uniquement dans l'image exportée)
           clonedEl.querySelectorAll('.sim-card-title-bar').forEach((bar) => {
             const div = bar as HTMLElement;
             div.style.paddingTop = '8px';
             div.style.paddingBottom = '12px';
             const h3 = div.querySelector('h3');
             if (h3) (h3 as HTMLElement).style.transform = 'translateY(-5px)';
+          });
+          // Prénom et nom : bien positionner dans l'image exportée (comme les titres)
+          clonedEl.querySelectorAll('.sim-card-header h1').forEach((h) => {
+            (h as HTMLElement).style.transform = 'translateY(-5px)';
+          });
+          clonedEl.querySelectorAll('.sim-card-header h2').forEach((h) => {
+            (h as HTMLElement).style.transform = 'translateY(-5px)';
+          });
+          // Bloc génération : même correction que les titres (padding + remonter le texte dans l'export uniquement)
+          clonedEl.querySelectorAll('.sim-card-generation-block').forEach((block) => {
+            const div = block as HTMLElement;
+            div.style.paddingTop = '8px';
+            div.style.paddingBottom = '12px';
+            const span = div.querySelector('span');
+            if (span) (span as HTMLElement).style.transform = 'translateY(-8px)';
+          });
+          // Texte des diplômes : remonter + éviter le crop (tout le texte visible dans l'export)
+          clonedEl.querySelectorAll('.sim-card-left-column').forEach((col) => {
+            (col as HTMLElement).style.overflow = 'visible';
+          });
+          clonedEl.querySelectorAll('.sim-card-degrees-content').forEach((c) => {
+            (c as HTMLElement).style.overflow = 'visible';
+          });
+          clonedEl.querySelectorAll('.sim-card-degree-row').forEach((row) => {
+            (row as HTMLElement).style.overflow = 'visible';
+          });
+          clonedEl.querySelectorAll('.sim-card-degree-label').forEach((label) => {
+            const el = label as HTMLElement;
+            el.style.transform = 'translateY(-9px)';
+            el.style.overflow = 'visible';
+            el.style.textOverflow = 'clip';
+            el.style.minWidth = '0';
           });
         },
       });

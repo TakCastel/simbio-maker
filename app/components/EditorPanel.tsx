@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import Editor from '@/components/Editor';
-import Tooltip from '@/components/Tooltip';
 import { EMPTY_PROFILE } from '@/constants';
 import { SimProfile } from '@/types';
 
@@ -56,16 +55,14 @@ export default function EditorPanel({ isOpen, onClose, profile, setProfile }: Ed
             Edit profile
           </h2>
           <div className="flex items-center gap-1 shrink-0">
-            <Tooltip label="Delete all">
-              <button
-                type="button"
-                onClick={() => setShowResetModal(true)}
-                className="p-2 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-100 transition-colors"
-                aria-label="Delete all"
-              >
-                <Trash2 size={18} />
-              </button>
-            </Tooltip>
+            <button
+              type="button"
+              onClick={() => setShowResetModal(true)}
+              className="p-2 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-100 transition-colors"
+              aria-label="Delete all"
+            >
+              <Trash2 size={18} />
+            </button>
             <button
               type="button"
               onClick={onClose}
