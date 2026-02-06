@@ -77,6 +77,11 @@ export default function PreviewSection({
         )
       );
 
+      // Dimensions réelles de l'avatar (carte affichée) pour les réappliquer au clone
+      const avatarInner = el.querySelector('.sim-card-avatar-inner') as HTMLElement | null;
+      const avatarW = avatarInner?.offsetWidth ?? 284;
+      const avatarH = avatarInner?.offsetHeight ?? Math.round((avatarW * 4) / 3);
+
       const { default: html2canvas } = await import('html2canvas');
       await new Promise((r) => setTimeout(r, 200));
 
@@ -140,6 +145,31 @@ export default function PreviewSection({
             el.style.overflow = 'visible';
             el.style.textOverflow = 'clip';
             el.style.minWidth = '0';
+          });
+          // Avatar : reprendre les dimensions exactes de la carte affichée + dessiner l'image en background
+          // pour éviter que html2canvas étire l'image (object-fit souvent ignoré)
+          clonedEl.querySelectorAll('.sim-card-avatar-inner').forEach((inner) => {
+            const box = inner as HTMLElement;
+            box.style.width = `${avatarW}px`;
+            box.style.height = `${avatarH}px`;
+            box.style.aspectRatio = 'unset';
+            box.style.flexShrink = '0';
+          });
+          clonedEl.querySelectorAll('.sim-card-avatar-img').forEach((imgEl) => {
+            const img = imgEl as HTMLImageElement;
+            const src = img.getAttribute('src') || img.src;
+            if (!src) return;
+            const parent = img.parentElement as HTMLElement;
+            if (!parent) return;
+            const div = parent.ownerDocument.createElement('div');
+            div.setAttribute('aria-hidden', 'true');
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.style.backgroundImage = `url(${JSON.stringify(src)})`;
+            div.style.backgroundSize = 'cover';
+            div.style.backgroundPosition = 'top center';
+            div.style.backgroundRepeat = 'no-repeat';
+            parent.replaceChild(div, img);
           });
         },
       });

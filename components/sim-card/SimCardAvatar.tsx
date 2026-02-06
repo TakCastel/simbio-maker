@@ -22,12 +22,12 @@ export default function SimCardAvatar({ avatarUrl }: SimCardAvatarProps) {
             '0 0 0 1px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.06), 0 6px 14px rgba(0,0,0,0.1), 0 12px 28px rgba(0,0,0,0.08)',
         }}
       >
-        <div className="aspect-[3/4] w-full overflow-hidden rounded-[2px] bg-slate-100">
+        <div className="sim-card-avatar-inner aspect-[3/4] w-full overflow-hidden rounded-[2px] bg-slate-100">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt="Sim"
-              className="w-full h-full object-cover object-top"
+              className="sim-card-avatar-img w-full h-full object-cover object-top"
               crossOrigin="anonymous"
             />
           ) : (
