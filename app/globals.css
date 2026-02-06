@@ -30,6 +30,28 @@ body {
   background: #94a3b8;
 }
 
+/* Mobile : scale + centrage pour que la feuille tienne en 100% largeur et reste visible. */
+@media (max-width: 639px) {
+  .scale-max-width {
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    min-height: 300px;
+    height: calc(1016px * (100vw / 920));
+  }
+  .scale-max-width > * {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 920px !important;
+    min-height: 1016px;
+    margin-left: -460px;
+    box-sizing: border-box;
+    transform-origin: top center;
+    transform: scale(calc(100vw / 920));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -2,6 +2,17 @@
   command = "npm run build"
   publish = "out"
 
+# S'assurer que les assets sont servis (éviter que /* capture /icons et /_next)
+[[redirects]]
+  from = "/icons/*"
+  to = "/icons/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/_next/*"
+  to = "/_next/:splat"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

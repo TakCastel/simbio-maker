@@ -98,14 +98,26 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
     firstName: String(raw.firstName),
     lastName: String(raw.lastName),
     generation: String(raw.generation),
-    avatarUrl: typeof raw.avatarUrl === 'string' ? raw.avatarUrl : raw.avatarUrl === null ? null : EMPTY_PROFILE.avatarUrl,
+    // Les blob: URLs ne survivent pas au rechargement ou à un autre domaine (prod) → les ignorer
+    avatarUrl:
+      typeof raw.avatarUrl === 'string' && !raw.avatarUrl.startsWith('blob:')
+        ? raw.avatarUrl
+        : raw.avatarUrl === null
+          ? null
+          : EMPTY_PROFILE.avatarUrl,
     traits: rawTraits.map(enrichTrait).filter((t): t is Trait => t != null),
     skills: rawSkills.map(enrichSkill).filter((s): s is Skill => s != null),
     aspirations: rawAspirations.map(enrichAspiration).filter((a): a is Aspiration => a != null),
     career,
     degrees: Array.isArray(raw.degrees) ? (raw.degrees as string[]) : [],
     lifestyles: Array.isArray(raw.lifestyles) ? (raw.lifestyles as string[]) : [],
-    publicImage: raw.publicImage !== null && raw.publicImage !== undefined ? String(raw.publicImage) : null,
+    publicImage:
+      raw.publicImage !== null && raw.publicImage !== undefined
+        ? (() => {
+            const s = String(raw.publicImage);
+            return s.startsWith('blob:') ? null : s;
+          })()
+        : null,
     genealogy,
   };
 }

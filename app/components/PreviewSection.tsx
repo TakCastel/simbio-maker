@@ -20,42 +20,83 @@ export default function PreviewSection({
 }: PreviewSectionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  /** Convert blob URL to data URL so html2canvas can draw it without CORS/taint issues. */
+  const blobToDataUrl = (url: string): Promise<string> => {
+    return fetch(url)
+      .then((r) => r.blob())
+      .then(
+        (blob) =>
+          new Promise<string>((resolve, reject) => {
+            const fr = new FileReader();
+            fr.onload = () => resolve(fr.result as string);
+            fr.onerror = reject;
+            fr.readAsDataURL(blob);
+          })
+      );
+  };
+
   const handleDownload = async () => {
     if (!cardRef.current) return;
     onDownloadStart();
     try {
       const el = cardRef.current;
-      // Preload all images in the card so they are ready for html2canvas (avoids blank/tainted canvas)
       const imgs = el.querySelectorAll<HTMLImageElement>('img[src]');
+      const restores: { img: HTMLImageElement; src: string }[] = [];
+
+      // 1) Convert blob URLs to data URLs so they render in the canvas (blob: often fails in clone)
+      for (const img of Array.from(imgs)) {
+        const src = img.getAttribute('src');
+        if (src?.startsWith('blob:')) {
+          try {
+            const dataUrl = await blobToDataUrl(src);
+            restores.push({ img, src });
+            img.src = dataUrl;
+          } catch {
+            // keep original blob if conversion fails
+          }
+        }
+      }
+
+      // 2) Preload all images so they are ready for html2canvas
       await Promise.all(
         Array.from(imgs).map(
           (img) =>
-            new Promise<void>((resolve, reject) => {
+            new Promise<void>((resolve) => {
               if (img.complete && img.naturalWidth > 0) {
                 resolve();
                 return;
               }
               const loader = new Image();
-              loader.crossOrigin = 'anonymous';
+              if (img.src.startsWith('http://') || img.src.startsWith('https://')) {
+                loader.crossOrigin = 'anonymous';
+              }
               loader.onload = () => resolve();
-              loader.onerror = () => resolve(); // continue even if one fails (e.g. placeholder)
+              loader.onerror = () => resolve();
               loader.src = img.src;
             })
         )
       );
+
       const { default: html2canvas } = await import('html2canvas');
       await new Promise((r) => setTimeout(r, 200));
+
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
-        imageTimeout: 0,
+        imageTimeout: 15000,
         logging: false,
         onclone(_, clonedEl) {
-          clonedEl.querySelectorAll('img').forEach((img) => {
-            (img as HTMLImageElement).crossOrigin = 'anonymous';
+          // Only set crossOrigin for external http(s) URLs; data/blob/relative must stay default to avoid blank images
+          clonedEl.querySelectorAll('img').forEach((imgEl) => {
+            const el = imgEl as HTMLImageElement;
+            const src = el.getAttribute('src') || '';
+            if (src.startsWith('http://') || src.startsWith('https://')) {
+              el.crossOrigin = 'anonymous';
+            } else {
+              el.removeAttribute('crossorigin');
+            }
           });
-          // Corriger le centrage vertical des titres uniquement dans l'image exportée (pas dans la vue HTML)
           clonedEl.querySelectorAll('.sim-card-title-bar').forEach((bar) => {
             const div = bar as HTMLElement;
             div.style.paddingTop = '8px';
@@ -64,6 +105,11 @@ export default function PreviewSection({
             if (h3) (h3 as HTMLElement).style.transform = 'translateY(-5px)';
           });
         },
+      });
+
+      // Restore original blob URLs so the visible card is unchanged
+      restores.forEach(({ img, src }) => {
+        img.src = src;
       });
       const dataUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -84,13 +130,14 @@ export default function PreviewSection({
   };
 
   return (
-    <section className="w-full flex flex-col items-center py-6 sm:py-10">
-      {/* Dark inset frame, card inside */}
-      <div className="w-full max-w-[920px] flex flex-col items-center">
-        <div className="w-full rounded-2xl p-3 sm:p-4 bg-slate-200/60 border border-slate-300/80">
-          <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
-            <div className="w-full rounded-xl overflow-hidden shrink-0">
-              <SimsCard ref={cardRef} profile={profile} />
+    <section className="w-full min-w-0 flex flex-col items-center py-6 sm:py-10 max-sm:py-4">
+      <div className="w-full max-w-[920px] min-w-0 flex flex-col items-center gap-6">
+        <div className="w-full scale-max-width shrink-0">
+          <div className="w-full rounded-2xl p-3 sm:p-4 bg-slate-200/60 border border-slate-300/80 max-sm:p-2">
+            <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
+              <div className="w-full rounded-xl overflow-hidden shrink-0">
+                <SimsCard ref={cardRef} profile={profile} />
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +146,7 @@ export default function PreviewSection({
           type="button"
           onClick={handleDownload}
           disabled={isDownloading}
-          className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
           style={{ backgroundColor: 'var(--color-primary-dark)', color: '#fff' }}
         >
           <Download size={20} />
