@@ -15,7 +15,7 @@ const quicksand = Quicksand({
 });
 
 export const metadata: Metadata = {
-  title: 'Sims Bio Maker',
+  title: 'Sims Maker',
   description: 'Create your Sim legacy card',
   icons: {
     icon: '/icon.webp',

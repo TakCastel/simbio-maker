@@ -54,7 +54,7 @@ export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onIm
           />
           <div className="min-w-0">
             <h1 className="font-title font-semibold text-xl sm:text-2xl uppercase tracking-[0.12em] text-slate-800 truncate">
-              Sims Bio Maker
+              Sims Maker
             </h1>
             <p className="font-sans text-xs sm:text-sm text-slate-500 truncate mt-0.5">
               Create your legacy card
