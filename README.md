@@ -18,3 +18,9 @@ View your app in AI Studio: https://ai.studio/apps/drive/1ITw1Olr7Dzgt7ceXffiAW2
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Deploy on Netlify
+
+1. Build: `npm run build` (output in `dist/`)
+2. Connect the repo to Netlify; build command: `npm run build`, publish directory: `dist`
+3. Or use the included `netlify.toml`: Netlify will use it automatically.

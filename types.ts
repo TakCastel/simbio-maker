@@ -11,12 +11,37 @@ export enum SkillLevel {
   Ten = 10,
 }
 
+/** Trait category (Sims 4 wiki) for display and filtering */
+export type TraitCategory =
+  | 'emotional'
+  | 'hobby'
+  | 'lifestyle'
+  | 'social'
+  | 'toddler'
+  | 'infant'
+  | 'bonus'
+  | 'reward'
+  | 'death'
+  | 'inherited'
+  | 'misc'
+  | 'toddler_quirk'
+  | 'infant_quirk'
+  | 'character_value'
+  | 'phase'
+  | 'confidence'
+  | 'high_school'
+  | 'aspiration_child'
+  | 'aspiration_teen'
+  | 'grief'
+  | 'occult'
+  | 'werewolf_friend';
+
 export interface Trait {
   id: string;
   name: string;
   description: string;
-  icon: string; // Emoji or image URL
-  type: 'emotional' | 'hobby' | 'lifestyle' | 'social';
+  icon: string;
+  type: TraitCategory;
 }
 
 export interface Skill {
@@ -30,6 +55,8 @@ export interface Aspiration {
   id: string;
   name: string;
   icon: string;
+  /** Wiki category for grouped display (Animal, Athletic, Creativity, etc.) */
+  category?: string;
 }
 
 export interface Career {
@@ -56,6 +83,6 @@ export interface SimProfile {
   career: Career;
   degrees: string[]; // Just icons or names
   lifestyles: string[]; // Icons
-  publicImage: string; // Reputation icon
+  publicImage: string | null; // Reputation icon, optional
   genealogy: Genealogy;
 }

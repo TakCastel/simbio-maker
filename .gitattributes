@@ -1,0 +1,2 @@
+# Git LFS - icônes et assets binaires
+*.png filter=lfs diff=lfs merge=lfs -text
