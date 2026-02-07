@@ -217,6 +217,7 @@ export default function PreviewSection({
       ua.includes('fban') ||
       ua.includes('fbav') ||
       ua.includes('instagram') ||
+      ua.includes('threads') ||
       ua.includes('twitter') ||
       ua.includes('line/') ||
       ua.includes('snapchat') ||
