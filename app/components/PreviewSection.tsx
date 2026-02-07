@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Download } from 'lucide-react';
+import { Download, ImageIcon } from 'lucide-react';
 import SimsCard from '@/components/SimsCard';
 import ZoomableCard from '@/app/components/ZoomableCard';
 import { SimProfile } from '@/types';
@@ -267,6 +267,34 @@ export default function PreviewSection({
     }
   };
 
+  /** Ouvre l’image de la card dans un nouvel onglet via un lien blob (évite about:blank avec data URL). */
+  const handleViewImage = async () => {
+    if (!cardRef.current) return;
+    onDownloadStart();
+    try {
+      const dataUrl = await generateCardImage();
+      if (dataUrl) {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.rel = 'noopener noreferrer';
+        link.target = '_blank';
+        link.href = blobUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+      } else {
+        const hasAvatar = Boolean(profile.avatarUrl?.trim());
+        const msg = hasAvatar ? 'Could not generate image. Try using a local image for the avatar.' : 'Could not generate image. Please try again or use another browser.';
+        alert(msg);
+      }
+    } finally {
+      onDownloadEnd();
+    }
+  };
+
   return (
     <section className="w-full min-w-0 flex-1 flex flex-col items-center py-6 sm:py-10 max-sm:py-4 min-h-0">
       <div className="w-full max-w-[920px] sm:max-w-[2400px] min-w-0 flex-1 flex flex-col items-center gap-6 min-h-0 max-sm:gap-3">
@@ -282,16 +310,27 @@ export default function PreviewSection({
           </ZoomableCard>
         </div>
 
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white shadow-lg transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-          style={{ backgroundColor: 'var(--color-primary-dark)', color: '#fff' }}
-        >
-          <Download size={20} />
-          {isDownloading ? 'Generating…' : 'Download card'}
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={handleViewImage}
+            disabled={isDownloading}
+            className="inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ImageIcon size={18} />
+            {isDownloading ? 'Generating…' : 'View image'}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-white shadow-md transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: 'var(--color-primary-dark)', color: '#fff' }}
+          >
+            <Download size={18} />
+            {isDownloading ? 'Generating…' : 'Download card'}
+          </button>
+        </div>
       </div>
     </section>
   );
