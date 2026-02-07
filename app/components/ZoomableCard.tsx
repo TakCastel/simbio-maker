@@ -222,14 +222,14 @@ export default function ZoomableCard({ children, disabled = false }: ZoomableCar
       {!disabled && (
         <div
           data-zoom-controls
-          className="absolute top-2 right-2 z-20 flex items-center gap-1 rounded-lg bg-black/50 text-white p-1.5 transition-opacity pointer-events-none [&_button]:pointer-events-auto"
-          style={{ opacity: showControls ? 1 : 0.6 }}
+          className="absolute top-2 right-2 z-20 flex items-center gap-0.5 rounded-md bg-white text-slate-800 shadow border border-slate-200 p-0.5 transition-opacity pointer-events-none [&_button]:pointer-events-auto"
+          style={{ opacity: showControls ? 1 : 0.85 }}
           aria-label="Zoom"
         >
           <button
             type="button"
             onClick={zoomOut}
-            className="p-2 rounded hover:bg-white/20 disabled:opacity-40"
+            className="w-7 h-7 flex items-center justify-center rounded-sm hover:bg-slate-100 disabled:opacity-40 text-slate-700 text-sm font-medium"
             disabled={zoomLevel <= MIN_ZOOM}
             aria-label="Zoom out"
           >
@@ -238,7 +238,7 @@ export default function ZoomableCard({ children, disabled = false }: ZoomableCar
           <button
             type="button"
             onClick={resetZoom}
-            className="px-2 py-1 text-sm tabular-nums min-w-[3rem]"
+            className="px-1.5 py-0.5 text-xs tabular-nums min-w-[2.25rem] text-slate-700"
             aria-label="Reset zoom"
           >
             {percentLabel}%
@@ -246,7 +246,7 @@ export default function ZoomableCard({ children, disabled = false }: ZoomableCar
           <button
             type="button"
             onClick={zoomIn}
-            className="p-2 rounded hover:bg-white/20 disabled:opacity-40"
+            className="w-7 h-7 flex items-center justify-center rounded-sm hover:bg-slate-100 disabled:opacity-40 text-slate-700 text-sm font-medium"
             disabled={zoomLevel >= MAX_ZOOM}
             aria-label="Zoom in"
           >
