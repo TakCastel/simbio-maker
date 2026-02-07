@@ -30,6 +30,43 @@ body {
   background: #94a3b8;
 }
 
+/* Zone scroll du CV : scroll actif (drag / molette) mais sans barres visibles. */
+.zoomable-card-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.zoomable-card-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Le viewer = le cadre gris. Toujours A4 portrait (210 × 297). */
+.zoomable-card-viewport {
+  aspect-ratio: 210 / 297;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  min-height: 0;
+}
+/* Desktop : largeur à ~85 % du conteneur (entre “étroit” et “pleine largeur”), hauteur suit le ratio. */
+@media (min-width: 640px) {
+  .zoomable-card-viewport {
+    width: 65%;
+    height: auto;
+    max-width: 100%;
+  }
+}
+
+/* Conteneur du viewer : sur desktop, viewer agrandi (peut dépasser l’écran, la page scroll). */
+.zoomable-card-container {
+  min-height: 0;
+}
+@media (min-width: 640px) {
+  .zoomable-card-container {
+    /* Viewer au maximum en desktop : quasi plein écran. */
+    min-height: min(100dvh, 1300px);
+  }
+}
+
 /* Mobile : scale + centrage pour que la feuille tienne en 100% largeur et reste visible. */
 @media (max-width: 639px) {
   .scale-max-width {
@@ -50,6 +87,23 @@ body {
     transform-origin: top center;
     transform: scale(calc(100vw / 920));
   }
+}
+
+/* Dans ZoomableCard, on ne redimensionne pas au mobile : le fit A4 + zoom du composant gère tout. */
+.zoomable-card-viewport .scale-max-width {
+  width: 100%;
+  max-width: 920px;
+  height: auto;
+  min-height: 0;
+}
+.zoomable-card-viewport .scale-max-width > * {
+  position: static;
+  left: auto;
+  margin-left: 0;
+  width: 100% !important;
+  max-width: 920px;
+  min-height: 0;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

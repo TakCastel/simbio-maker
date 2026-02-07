@@ -37,7 +37,7 @@ export default function Home() {
         onImportProfile={setProfile}
       />
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full min-h-0 flex flex-col">
         <PreviewSection
           profile={profile}
           isDownloading={isDownloading}

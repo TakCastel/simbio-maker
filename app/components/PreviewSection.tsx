@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { Download } from 'lucide-react';
 import SimsCard from '@/components/SimsCard';
+import ZoomableCard from '@/app/components/ZoomableCard';
 import { SimProfile } from '@/types';
 
 interface PreviewSectionProps {
@@ -19,7 +20,6 @@ export default function PreviewSection({
   onDownloadEnd,
 }: PreviewSectionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-
   /** Convert blob URL to data URL so html2canvas can draw it without CORS/taint issues. */
   const blobToDataUrl = (url: string): Promise<string> => {
     return fetch(url)
@@ -35,11 +35,11 @@ export default function PreviewSection({
       );
   };
 
-  const handleDownload = async () => {
-    if (!cardRef.current) return;
-    onDownloadStart();
+  /** Génère l’image de la carte et retourne le data URL, ou null en cas d’erreur. */
+  const generateCardImage = async (): Promise<string | null> => {
+    if (!cardRef.current) return null;
+    const el = cardRef.current;
     try {
-      const el = cardRef.current;
       const imgs = el.querySelectorAll<HTMLImageElement>('img[src]');
       const restores: { img: HTMLImageElement; src: string }[] = [];
 
@@ -83,9 +83,24 @@ export default function PreviewSection({
       const avatarH = avatarInner?.offsetHeight ?? Math.round((avatarW * 4) / 3);
 
       const { default: html2canvas } = await import('html2canvas');
-      await new Promise((r) => setTimeout(r, 200));
 
-      const canvas = await html2canvas(el, {
+      // Capture at 100% zoom: reset scroll et scale pour que l'export soit toute la carte.
+      const scrollEl = document.querySelector<HTMLDivElement>('[data-zoom-scroll]');
+      const savedScroll = scrollEl ? { left: scrollEl.scrollLeft, top: scrollEl.scrollTop } : null;
+      if (scrollEl) {
+        scrollEl.scrollLeft = 0;
+        scrollEl.scrollTop = 0;
+      }
+      const zoomWrap = document.querySelector<HTMLElement>('[data-zoom-content]');
+      const savedTransform = zoomWrap?.style.transform ?? '';
+      if (zoomWrap) {
+        zoomWrap.style.transform = 'scale(1)';
+      }
+      await new Promise((r) => requestAnimationFrame(r));
+      await new Promise((r) => setTimeout(r, 100));
+
+      try {
+        const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         backgroundColor: null,
@@ -174,39 +189,60 @@ export default function PreviewSection({
         },
       });
 
-      // Restore original blob URLs so the visible card is unchanged
-      restores.forEach(({ img, src }) => {
-        img.src = src;
-      });
-      const dataUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `${profile.firstName || 'Sim'}_${profile.lastName || 'Bio'}_Legacy.png`;
-      link.click();
+        // Restore original blob URLs so the visible card is unchanged
+        restores.forEach(({ img, src }) => {
+          img.src = src;
+        });
+        return canvas.toDataURL('image/png');
+      } finally {
+        if (scrollEl && savedScroll) {
+          scrollEl.scrollLeft = savedScroll.left;
+          scrollEl.scrollTop = savedScroll.top;
+        }
+        if (zoomWrap) {
+          zoomWrap.style.transform = savedTransform;
+        }
+      }
     } catch (err) {
       console.error('Download failed:', err);
-      const hasAvatar = Boolean(profile.avatarUrl?.trim());
-      alert(
-        hasAvatar
-          ? 'Could not download. Try using a local image for the avatar.'
-          : 'Could not generate image. Please try again or use another browser.'
-      );
+      return null;
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    onDownloadStart();
+    try {
+      const dataUrl = await generateCardImage();
+      if (dataUrl) {
+        const fileName = `${profile.firstName || 'Sim'}_${profile.lastName || 'Bio'}_Legacy.png`;
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = fileName;
+        link.click();
+      } else {
+        const hasAvatar = Boolean(profile.avatarUrl?.trim());
+        const msg = hasAvatar ? 'Could not download. Try using a local image for the avatar.' : 'Could not generate image. Please try again or use another browser.';
+        alert(msg);
+      }
     } finally {
       onDownloadEnd();
     }
   };
 
   return (
-    <section className="w-full min-w-0 flex flex-col items-center py-6 sm:py-10 max-sm:py-4">
-      <div className="w-full max-w-[920px] min-w-0 flex flex-col items-center gap-6">
-        <div className="w-full scale-max-width shrink-0">
-          <div className="w-full rounded-2xl p-3 sm:p-4 bg-slate-200/60 border border-slate-300/80 max-sm:p-2">
-            <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
-              <div className="w-full rounded-xl overflow-hidden shrink-0">
-                <SimsCard ref={cardRef} profile={profile} />
+    <section className="w-full min-w-0 flex-1 flex flex-col items-center py-6 sm:py-10 max-sm:py-4 min-h-0">
+      <div className="w-full max-w-[920px] sm:max-w-[2400px] min-w-0 flex-1 flex flex-col items-center gap-6 min-h-0 max-sm:gap-3">
+        <div className="w-full min-h-0 flex-1 flex flex-col items-center min-w-0 zoomable-card-container">
+          <ZoomableCard disabled={isDownloading}>
+            <div className="w-full scale-max-width">
+              <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
+                <div className="w-full rounded-xl overflow-hidden shrink-0">
+                  <SimsCard ref={cardRef} profile={profile} />
+                </div>
               </div>
             </div>
-          </div>
+          </ZoomableCard>
         </div>
 
         <button

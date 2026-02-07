@@ -49,6 +49,7 @@ export default function Tooltip({ label, description, source, children }: Toolti
     <div
       ref={triggerRef}
       className="inline-flex"
+      data-no-drag
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
