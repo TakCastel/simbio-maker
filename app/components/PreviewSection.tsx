@@ -211,13 +211,19 @@ export default function PreviewSection({
 
   /** Détecte si on est dans un navigateur intégré (réseaux sociaux, etc.) où le téléchargement programmatique est souvent bloqué. */
   const isInAppBrowser = (): boolean => {
+    // Venant de Threads (referrer) ou ouvert depuis l’app Threads (UA peut ne pas contenir "threads")
+    if (typeof document !== 'undefined' && document.referrer && document.referrer.toLowerCase().includes('threads.net')) {
+      return true;
+    }
     if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
     const ua = navigator.userAgent.toLowerCase();
     return (
       ua.includes('fban') ||
       ua.includes('fbav') ||
+      ua.includes('fb_iab') ||
       ua.includes('instagram') ||
       ua.includes('threads') ||
+      ua.includes('iabmv') || // Meta in-app browser (Instagram, Threads, etc.)
       ua.includes('twitter') ||
       ua.includes('line/') ||
       ua.includes('snapchat') ||
