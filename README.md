@@ -1,26 +1,47 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Sims Maker
 
-# Run and deploy your AI Studio app
+Créer sa **legacy card** façon The Sims : une carte de personnage avec aspirations, diplômes, carrière, traits, compétences, généalogie, etc. Édition dans l’interface, prévisualisation en format A4 avec zoom et déplacement, export en image PNG.
 
-This contains everything you need to run your app locally.
+**Idée :** u/AriaSims24 · **Studio Castel**
 
-View your app in AI Studio: https://ai.studio/apps/drive/1ITw1Olr7Dzgt7ceXffiAW2y9lleDIQOm
+---
 
-## Run Locally
+## Lancer en local
 
-**Prerequisites:**  Node.js
+**Prérequis :** Node.js (v18+)
 
+```bash
+npm install
+npm run dev
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Ouvre [http://localhost:3000](http://localhost:3000).
 
-## Deploy on Netlify
+---
 
-1. Build: `npm run build` (output in `dist/`)
-2. Connect the repo to Netlify; build command: `npm run build`, publish directory: `dist`
-3. Or use the included `netlify.toml`: Netlify will use it automatically.
+## Build statique
+
+```bash
+npm run build
+```
+
+Le site est généré dans le dossier `out/`. Tu peux servir ce dossier avec n’importe quel hébergeur de fichiers statiques.
+
+---
+
+## Déploiement (Netlify)
+
+1. Connecte le dépôt à Netlify.
+2. **Build :** `npm run build`
+3. **Répertoire à publier :** `out`
+
+Le fichier `netlify.toml` est déjà configuré ; Netlify l’utilisera automatiquement.
+
+---
+
+## Stack
+
+- **Next.js** 15 (export statique)
+- **React** 19
+- **Tailwind CSS**
+- **html2canvas** pour l’export image de la carte

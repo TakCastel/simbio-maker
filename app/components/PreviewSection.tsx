@@ -209,6 +209,24 @@ export default function PreviewSection({
     }
   };
 
+  /** Détecte si on est dans un navigateur intégré (réseaux sociaux, etc.) où le téléchargement programmatique est souvent bloqué. */
+  const isInAppBrowser = (): boolean => {
+    if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+    const ua = navigator.userAgent.toLowerCase();
+    return (
+      ua.includes('fban') ||
+      ua.includes('fbav') ||
+      ua.includes('instagram') ||
+      ua.includes('twitter') ||
+      ua.includes('line/') ||
+      ua.includes('snapchat') ||
+      ua.includes('pinterest') ||
+      ua.includes('linkedin') ||
+      ua.includes('tiktok') ||
+      ua.includes('whatsapp')
+    );
+  };
+
   const handleDownload = async () => {
     if (!cardRef.current) return;
     onDownloadStart();
@@ -219,7 +237,19 @@ export default function PreviewSection({
         const link = document.createElement('a');
         link.href = dataUrl;
         link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+
+        // Dans les navigateurs intégrés (Facebook, Instagram, etc.), le download est souvent bloqué.
+        // On ouvre l'image dans un nouvel onglet pour que l'utilisateur puisse l'enregistrer manuellement.
+        if (isInAppBrowser()) {
+          window.open(dataUrl, '_blank', 'noopener,noreferrer');
+          alert(
+            "Dans ce navigateur, le téléchargement direct peut être bloqué. L'image s'est ouverte dans un nouvel onglet : utilisez le menu ou un appui long sur l'image pour l'enregistrer."
+          );
+        }
       } else {
         const hasAvatar = Boolean(profile.avatarUrl?.trim());
         const msg = hasAvatar ? 'Could not download. Try using a local image for the avatar.' : 'Could not generate image. Please try again or use another browser.';
