@@ -67,8 +67,8 @@ export interface Career {
 }
 
 export interface Genealogy {
-  father: string;
-  mother: string;
+  parent1: string;
+  parent2: string;
   spouse: string;
   siblings: string;
   children: string[];
@@ -91,12 +91,25 @@ export interface SectionConfigItem {
   title: string; // custom title; empty = use default
 }
 
-export type CardSectionConfig = Record<SectionId, SectionConfigItem>;
+/** Labels for genealogy parent slots (e.g. Father/Mother, Dad/Dad, Parent 1 / empty for single parent) */
+export interface GenealogyParentLabels {
+  parent1: string;
+  parent2: string;
+}
+
+export type CardSectionConfig = Record<SectionId, SectionConfigItem> & {
+  /** Optional custom labels for the two parent slots in the genealogy section */
+  genealogyLabels?: GenealogyParentLabels;
+  /** Show trait and aspiration names under icons on the card */
+  showIconLabels?: boolean;
+};
 
 export interface SimProfile {
   firstName: string;
   lastName: string;
   generation: string; // e.g., "1st Generation"
+  /** Optional pronouns; not shown on the card if empty */
+  pronouns?: string;
   avatarUrl: string | null;
   /** Biography text shown below the header (name, generation) */
   biography: string;

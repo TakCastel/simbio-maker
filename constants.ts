@@ -948,8 +948,8 @@ export const EMPTY_PROFILE = {
   lifestyles: [],
   publicImage: null as string | null,
   genealogy: {
-    father: '',
-    mother: '',
+    parent1: '',
+    parent2: '',
     spouse: '',
     siblings: '',
     children: [] as string[],

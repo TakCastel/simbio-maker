@@ -133,20 +133,47 @@ export default function PreviewSection({
             const h3 = div.querySelector('h3');
             if (h3) (h3 as HTMLElement).style.transform = 'translateY(-5px)';
           });
-          // Prénom et nom : bien positionner dans l'image exportée (comme les titres)
-          clonedEl.querySelectorAll('.sim-card-header h1').forEach((h) => {
-            (h as HTMLElement).style.transform = 'translateY(-5px)';
-          });
-          clonedEl.querySelectorAll('.sim-card-header h2').forEach((h) => {
-            (h as HTMLElement).style.transform = 'translateY(-5px)';
-          });
-          // Bloc génération : même correction que les titres (padding + remonter le texte dans l'export uniquement)
+          // Prénom, nom, pronoms : mêmes espacements que le preview (éviter écart avec l’image exportée)
+          const header = clonedEl.querySelector('.sim-card-header');
+          if (header) {
+            const h1 = header.querySelector('h1') as HTMLElement | null;
+            if (h1) {
+              h1.style.transform = 'translateY(-2px)';
+              h1.style.lineHeight = '1.1';
+            }
+            const h2 = header.querySelector('h2') as HTMLElement | null;
+            if (h2) {
+              h2.style.transform = 'translateY(-2px)';
+              h2.style.lineHeight = '1.2';
+              h2.style.marginTop = '0.25rem';
+            }
+            const pronounP = header.querySelector('p') as HTMLElement | null;
+            if (pronounP) {
+              pronounP.style.transform = 'translateY(-2px)';
+              pronounP.style.marginTop = '0.25rem';
+            }
+          }
+          // Bloc génération : plus de marge en haut, moins en bas (trait du haut un peu plus bas)
           clonedEl.querySelectorAll('.sim-card-generation-block').forEach((block) => {
-            const div = block as HTMLElement;
-            div.style.paddingTop = '8px';
-            div.style.paddingBottom = '12px';
-            const span = div.querySelector('span');
-            if (span) (span as HTMLElement).style.transform = 'translateY(-10px)';
+            const el = block as HTMLElement;
+            el.style.paddingTop = '12px';
+            el.style.paddingBottom = '4px';
+          });
+          // Bloc génération : flex pour le centrage + correction export (html2canvas décale le texte)
+          clonedEl.querySelectorAll('.sim-card-generation-label-wrap').forEach((wrap) => {
+            const el = wrap as HTMLElement;
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+            el.style.minHeight = '1.5rem';
+            el.style.paddingTop = '2px';
+            el.style.paddingBottom = '2px';
+            const span = el.querySelector('span');
+            if (span) {
+              // html2canvas décale le texte vers le bas : on le remonte pour coller au rendu du preview
+              (span as HTMLElement).style.transform = 'translateY(-6px)';
+              (span as HTMLElement).style.lineHeight = '1';
+            }
           });
           // Numéros (niveaux de compétences, etc.) : remonter dans l'image exportée
           clonedEl.querySelectorAll('.sim-card-skill-level').forEach((el) => {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SimProfile, Trait } from '@/types';
+import { SimProfile, Trait, TraitCategory } from '@/types';
 import {
   AVAILABLE_TRAITS,
   AVAILABLE_SKILLS,
@@ -15,6 +15,12 @@ import Tooltip from '@/components/Tooltip';
 interface EditorProps {
   profile: SimProfile;
   setProfile: React.Dispatch<React.SetStateAction<SimProfile>>;
+}
+
+/** Format trait category for tooltip "From ..." line */
+function formatTraitSource(type: TraitCategory): string {
+  const label = type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return label.includes('Trait') ? label : `${label} Trait`;
 }
 
 /** Sépare une chaîne en noms d'enfants (virgule, point-virgule ou retours à la ligne). Préserve les espaces dans chaque nom. */
@@ -170,6 +176,18 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
             </div>
 
             <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pronouns (optional)</label>
+              <input
+                type="text"
+                value={profile.pronouns ?? ''}
+                onChange={(e) => setProfile({ ...profile, pronouns: e.target.value.trim() || undefined })}
+                placeholder="e.g. they/them, she/her"
+                className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">Not shown on the card if left empty.</p>
+            </div>
+
+            <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Biography</label>
               <textarea
                 value={profile.biography}
@@ -192,7 +210,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                     }`}
                   >
                     <img src={c.icon} alt="" className="w-8 h-8 object-contain" />
-                    <span className="text-[10px] font-bold text-slate-700 mt-1 text-center max-w-[70px] truncate">{c.name}</span>
+                    <span className="text-[10px] font-bold text-slate-700 mt-1 text-center min-w-0 max-w-[120px] line-clamp-2 leading-tight break-normal">{c.name}</span>
                   </button>
                 ))}
               </div>
@@ -212,7 +230,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                       }`}
                     >
                       <img src={d.icon} alt="" className="w-8 h-8 object-contain" />
-                      <span className="text-[10px] font-bold text-slate-600 mt-1 text-center max-w-[80px] truncate">{d.name}</span>
+                      <span className="text-[10px] font-bold text-slate-600 mt-1 text-center min-w-0 max-w-[120px] line-clamp-2 leading-tight break-normal">{d.name}</span>
                     </button>
                   );
                 })}
@@ -233,7 +251,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                       }`}
                     >
                       <img src={l.icon} alt="" className="w-8 h-8 object-contain" />
-                      <span className="text-[10px] font-bold text-slate-600 mt-1 text-center max-w-[80px] truncate">{l.name}</span>
+                      <span className="text-[10px] font-bold text-slate-600 mt-1 text-center min-w-0 max-w-[120px] line-clamp-2 leading-tight break-normal">{l.name}</span>
                     </button>
                   );
                 })}
@@ -261,7 +279,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                     }`}
                   >
                     <img src={p.icon} alt="" className="w-8 h-8 object-contain" />
-                    <span className="text-[10px] font-bold text-slate-600 mt-1">{p.name}</span>
+                    <span className="text-[10px] font-bold text-slate-600 mt-1 text-center min-w-0 max-w-[120px] line-clamp-2 leading-tight break-normal">{p.name}</span>
                   </button>
                 ))}
               </div>
@@ -303,21 +321,28 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                   return (
                     <div key={type}>
                       <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1.5 sticky top-0 bg-white py-1 z-10">{label}</h4>
-                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {traitsInCategory.map((trait) => {
                           const isSelected = profile.traits.some((t) => t.id === trait.id);
                           return (
-                            <button
+                            <Tooltip
                               key={trait.id}
-                              onClick={() => toggleTrait(trait)}
-                              className={`p-2 rounded-lg border-2 text-center transition-all ${
-                                isSelected ? 'bg-slate-100 border-slate-700 ring-1 ring-slate-700' : 'bg-white border-slate-200 hover:bg-slate-50'
-                              }`}
-                              disabled={!isSelected && profile.traits.length >= 15}
+                              label={trait.name}
+                              description={trait.description}
+                              source={formatTraitSource(trait.type)}
+                              headerLabel="Trait"
                             >
-                              <img src={trait.icon} alt={trait.name} className="w-8 h-8 object-contain mx-auto mb-1" />
-                              <div className="text-[10px] leading-tight font-bold text-slate-600 truncate">{trait.name}</div>
-                            </button>
+                              <button
+                                onClick={() => toggleTrait(trait)}
+                                className={`flex flex-col items-center p-2 rounded-lg border-2 text-center transition-all shrink-0 ${
+                                  isSelected ? 'bg-slate-100 border-slate-700 ring-1 ring-slate-700' : 'bg-white border-slate-200 hover:bg-slate-50'
+                                }`}
+                                disabled={!isSelected && profile.traits.length >= 15}
+                              >
+                                <img src={trait.icon} alt={trait.name} className="w-8 h-8 object-contain mb-1" />
+                                <span className="text-[10px] leading-tight font-bold text-slate-600 text-center line-clamp-2 break-normal max-w-[140px]">{trait.name}</span>
+                              </button>
+                            </Tooltip>
                           );
                         })}
                       </div>
@@ -430,20 +455,20 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Father</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Parent 1</label>
                 <input
                   type="text"
-                  value={profile.genealogy.father}
-                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, father: e.target.value } }))}
+                  value={profile.genealogy.parent1}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, parent1: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Mother</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Parent 2</label>
                 <input
                   type="text"
-                  value={profile.genealogy.mother}
-                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, mother: e.target.value } }))}
+                  value={profile.genealogy.parent2}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, parent2: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>

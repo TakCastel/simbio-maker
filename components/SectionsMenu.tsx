@@ -6,6 +6,7 @@ import type { CardSectionConfig, SectionId } from '@/types';
 import {
   SECTION_IDS,
   DEFAULT_SECTION_TITLES,
+  DEFAULT_GENEALOGY_LABELS,
   buildDefaultSectionConfig,
 } from '@/lib/sectionConfigStorage';
 
@@ -50,6 +51,14 @@ export default function SectionsMenu({ config, onConfigChange }: SectionsMenuPro
     onConfigChange({ ...config, [id]: { ...config[id], title } });
   };
 
+  const labels = config.genealogyLabels ?? DEFAULT_GENEALOGY_LABELS;
+  const setGenealogyLabel = (which: 'parent1' | 'parent2', value: string) => {
+    onConfigChange({
+      ...config,
+      genealogyLabels: { ...labels, [which]: value },
+    });
+  };
+
   const resetAll = () => {
     onConfigChange(buildDefaultSectionConfig());
   };
@@ -92,6 +101,19 @@ export default function SectionsMenu({ config, onConfigChange }: SectionsMenuPro
                 Enable or disable sections and rename their titles.
               </p>
 
+              <div className="mb-4 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={config.showIconLabels !== false}
+                    onChange={(e) => onConfigChange({ ...config, showIconLabels: e.target.checked })}
+                    className="rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                  />
+                  <span className="text-sm text-slate-700">Show legend under icons</span>
+                </label>
+                <p className="text-[10px] text-slate-500 mt-1 ml-6">Traits, aspirations, lifestyles &amp; public image: display names under icons on the card.</p>
+              </div>
+
               <div className="space-y-3 mb-4">
                 {SECTION_IDS.map((id) => (
                   <div
@@ -119,6 +141,30 @@ export default function SectionsMenu({ config, onConfigChange }: SectionsMenuPro
                       placeholder={DEFAULT_SECTION_TITLES[id]}
                       className="w-full px-2 py-1.5 text-xs rounded border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
                     />
+                    {id === 'genealogy' && (
+                      <div className="mt-2 pt-2 border-t border-slate-200 grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-medium text-slate-500 mb-0.5">Parent 1 label</label>
+                          <input
+                            type="text"
+                            value={labels.parent1}
+                            onChange={(e) => setGenealogyLabel('parent1', e.target.value)}
+                            placeholder="e.g. Father, Dad"
+                            className="w-full px-2 py-1 text-xs rounded border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-medium text-slate-500 mb-0.5">Parent 2 label</label>
+                          <input
+                            type="text"
+                            value={labels.parent2}
+                            onChange={(e) => setGenealogyLabel('parent2', e.target.value)}
+                            placeholder="e.g. Mother, Dad (leave empty for one parent)"
+                            className="w-full px-2 py-1 text-xs rounded border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

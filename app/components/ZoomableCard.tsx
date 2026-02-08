@@ -123,15 +123,7 @@ export default function ZoomableCard({ children, disabled = false }: ZoomableCar
     }
   }, []);
 
-  const handleWheel = useCallback(
-    (e: React.WheelEvent) => {
-      if (disabled || !scrollRef.current) return;
-      scrollRef.current.scrollLeft += e.deltaX;
-      scrollRef.current.scrollTop += e.deltaY;
-      e.preventDefault();
-    },
-    [disabled]
-  );
+  // Wheel is not captured: scroll (molette) défile la page uniquement. Déplacement dans le CV = drag uniquement.
 
   const zoomIn = useCallback(() => {
     if (disabled) return;
@@ -184,7 +176,6 @@ export default function ZoomableCard({ children, disabled = false }: ZoomableCar
           ref={scrollRef}
           data-zoom-scroll
           className="absolute inset-0 overflow-auto zoomable-card-scroll"
-          onWheel={disabled ? undefined : handleWheel}
         >
           <div
             style={{

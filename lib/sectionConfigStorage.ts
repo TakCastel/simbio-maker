@@ -1,4 +1,4 @@
-import type { CardSectionConfig, SectionId } from '@/types';
+import type { CardSectionConfig, GenealogyParentLabels, SectionId } from '@/types';
 
 export const SECTION_IDS: SectionId[] = [
   'aspirations',
@@ -24,6 +24,11 @@ export const DEFAULT_SECTION_TITLES: Record<SectionId, string> = {
   genealogy: 'Genealogy',
 };
 
+export const DEFAULT_GENEALOGY_LABELS: GenealogyParentLabels = {
+  parent1: 'Father',
+  parent2: 'Mother',
+};
+
 function buildDefaultItem(enabled: boolean): CardSectionConfig[SectionId] {
   return { enabled, title: '' };
 }
@@ -39,6 +44,8 @@ export function buildDefaultSectionConfig(): CardSectionConfig {
     traits: buildDefaultItem(true),
     skills: buildDefaultItem(true),
     genealogy: buildDefaultItem(true),
+    genealogyLabels: { ...DEFAULT_GENEALOGY_LABELS },
+    showIconLabels: true,
   };
 }
 
@@ -60,6 +67,15 @@ export function loadSectionConfigFromStorage(): CardSectionConfig {
         if (typeof o.title === 'string') result[id].title = o.title;
       }
     }
+    const gl = parsed.genealogyLabels;
+    if (gl && typeof gl === 'object' && gl !== null) {
+      const g = gl as Record<string, unknown>;
+      result.genealogyLabels = {
+        parent1: typeof g.parent1 === 'string' ? g.parent1 : DEFAULT_GENEALOGY_LABELS.parent1,
+        parent2: typeof g.parent2 === 'string' ? g.parent2 : DEFAULT_GENEALOGY_LABELS.parent2,
+      };
+    }
+    if (typeof parsed.showIconLabels === 'boolean') result.showIconLabels = parsed.showIconLabels;
     return result;
   } catch {
     return buildDefaultSectionConfig();

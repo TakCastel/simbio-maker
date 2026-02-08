@@ -22,11 +22,12 @@ export default function SimCardRightColumn({ profile }: SimCardRightColumnProps)
   const titleGenealogy = useSectionTitle('genealogy');
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 p-6 pt-8 pb-8 bg-white">
+    <div className="flex-1 flex flex-col min-w-0 p-6 pt-8 pb-5 bg-white">
       <SimCardHeader
         firstName={profile.firstName}
         lastName={profile.lastName}
         generation={profile.generation}
+        pronouns={profile.pronouns}
       />
 
       {sectionConfig.biography.enabled && (

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Genealogy } from '@/types';
 import { useCardTheme } from './CardThemeContext';
+import { useSectionConfig } from './SectionConfigContext';
+import { DEFAULT_GENEALOGY_LABELS } from '@/lib/sectionConfigStorage';
 
 interface SimCardGenealogyProps {
   genealogy: Genealogy;
@@ -9,11 +11,16 @@ interface SimCardGenealogyProps {
 }
 
 /**
- * Genealogy layout: Father/Mother bold label left, value below; Siblings/Spouse bold label right;
- * Children title centered across both columns, list below left-aligned.
+ * Genealogy layout: Parent 1 / Parent 2 (labels from config; rows shown only if value filled), Siblings/Spouse;
+ * Children centered below.
  */
 export default function SimCardGenealogy({ genealogy, title = 'Genealogy' }: SimCardGenealogyProps) {
   const { accent, titleBarText } = useCardTheme();
+  const sectionConfig = useSectionConfig();
+  const labels = sectionConfig.genealogyLabels ?? DEFAULT_GENEALOGY_LABELS;
+  const parent1Label = labels.parent1.trim() || 'Parent 1';
+  const parent2Label = labels.parent2.trim() || 'Parent 2';
+
   return (
     <div className="overflow-hidden bg-white">
       <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: accent }}>
@@ -22,16 +29,16 @@ export default function SimCardGenealogy({ genealogy, title = 'Genealogy' }: Sim
       <div className="px-5 py-2.5 bg-white">
       <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-lg">
         <div className="text-left">
-          <span className="block font-bold text-black text-base mb-0.5">Father</span>
-          <span className="text-black text-base">{genealogy.father || '—'}</span>
+          <span className="block font-bold text-black text-base mb-0.5">{parent1Label}</span>
+          <span className="text-black text-base">{genealogy.parent1 || '—'}</span>
         </div>
         <div className="text-right">
           <span className="block font-bold text-black text-base mb-0.5">Siblings</span>
           <span className="text-black text-base">{genealogy.siblings || 'None'}</span>
         </div>
         <div className="text-left">
-          <span className="block font-bold text-black text-base mb-0.5">Mother</span>
-          <span className="text-black text-base">{genealogy.mother || '—'}</span>
+          <span className="block font-bold text-black text-base mb-0.5">{parent2Label}</span>
+          <span className="text-black text-base">{genealogy.parent2 || '—'}</span>
         </div>
         <div className="text-right">
           <span className="block font-bold text-black text-base mb-0.5">Spouse</span>

@@ -3,6 +3,7 @@ import { Trait, TraitCategory } from '@/types';
 import Tooltip from '@/components/Tooltip';
 import { TRAITS_GRID_COLS, TRAITS_MAX } from './constants';
 import { useCardTheme } from './CardThemeContext';
+import { useSectionConfig } from './SectionConfigContext';
 
 /** Format trait category for tooltip "From ..." line */
 function formatTraitSource(type: TraitCategory): string {
@@ -17,11 +18,13 @@ interface SimCardTraitsProps {
 }
 
 /**
- * Traits grid: 3 rows x 5 columns = 15 slots. Transparent icons, no background or border.
- * Tooltip on icon hover only (group/trait).
+ * Traits grid: 3 rows x 5 columns = 15 slots. Transparent icons, optional name under icon.
+ * Tooltip on icon hover.
  */
 export default function SimCardTraits({ traits, title = 'Traits' }: SimCardTraitsProps) {
   const { accent, titleBarText } = useCardTheme();
+  const sectionConfig = useSectionConfig();
+  const showLabels = sectionConfig.showIconLabels !== false;
   return (
     <div className="mb-4 overflow-hidden bg-white">
       <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: accent }}>
@@ -30,7 +33,7 @@ export default function SimCardTraits({ traits, title = 'Traits' }: SimCardTrait
       <div className="px-5 py-2.5 bg-white">
       <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${TRAITS_GRID_COLS}, minmax(0, 1fr))` }}>
         {traits.map((trait) => (
-          <div key={trait.id} className="flex flex-col items-center justify-center min-h-[64px]">
+          <div key={trait.id} className={`flex flex-col items-center justify-center ${showLabels ? 'min-h-[80px]' : 'min-h-[64px]'}`}>
             <Tooltip label={trait.name} description={trait.description} source={formatTraitSource(trait.type)}>
               <img
                 src={trait.icon}
@@ -38,10 +41,15 @@ export default function SimCardTraits({ traits, title = 'Traits' }: SimCardTrait
                 className="w-14 h-14 object-contain"
               />
             </Tooltip>
+            {showLabels && (
+              <span className="text-xs font-medium text-slate-700 text-center mt-1.5 leading-tight max-w-full px-0.5 break-words">
+                {trait.name}
+              </span>
+            )}
           </div>
         ))}
         {Array.from({ length: Math.max(0, TRAITS_MAX - traits.length) }).map((_, i) => (
-          <div key={`empty-${i}`} className="min-h-[64px]" />
+          <div key={`empty-${i}`} className={showLabels ? 'min-h-[80px]' : 'min-h-[64px]'} />
         ))}
       </div>
       </div>

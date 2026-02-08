@@ -102,14 +102,14 @@ export default function ThemePicker({ theme, onThemeChange }: ThemePickerProps) 
         <button
           type="button"
           onClick={closeMenu}
-          className="fixed inset-0 z-[34] cursor-default"
+          className="fixed inset-0 z-[36] cursor-default"
           aria-label="Close menu"
           tabIndex={-1}
         />
       )}
       <div
         ref={containerRef}
-        className="fixed right-4 sm:right-6 lg:right-8 z-[35] flex items-start justify-end"
+        className="fixed right-4 sm:right-6 lg:right-8 z-[37] flex items-start justify-end"
         style={{ top: 'calc(var(--header-height, 5rem) + 1rem)' }}
       >
       <div className="relative">

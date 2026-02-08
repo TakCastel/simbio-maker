@@ -1,7 +1,7 @@
 import React from 'react';
 import { SimProfile } from '@/types';
 import Tooltip from '@/components/Tooltip';
-import { DEGREE_OPTIONS } from '@/constants';
+import { DEGREE_OPTIONS, LIFESTYLE_OPTIONS, PUBLIC_IMAGE_OPTIONS } from '@/constants';
 import { useCardTheme } from './CardThemeContext';
 import { useSectionConfig, useSectionTitle } from './SectionConfigContext';
 import SimCardAvatar from './SimCardAvatar';
@@ -40,19 +40,28 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
           {profile.aspirations.length > 0 ? (
             <div className="flex flex-wrap gap-2 justify-center">
               {profile.aspirations.map((asp, i) => (
-                <Tooltip
+                <div
                   key={i}
-                  label={asp.name}
-                  description={asp.description}
-                  source={asp.category ? `Aspiration · ${asp.category}` : undefined}
-                  headerLabel="Aspiration"
+                  className={`flex flex-col items-center ${sectionConfig.showIconLabels !== false ? 'min-w-[80px]' : ''}`}
                 >
-                  <img
-                    src={asp.icon}
-                    alt={asp.name}
-                    className="w-16 h-16 object-contain"
-                  />
-                </Tooltip>
+                  <Tooltip
+                    label={asp.name}
+                    description={asp.description}
+                    source={asp.category ? `Aspiration · ${asp.category}` : undefined}
+                    headerLabel="Aspiration"
+                  >
+                    <img
+                      src={asp.icon}
+                      alt={asp.name}
+                      className="w-16 h-16 object-contain"
+                    />
+                  </Tooltip>
+                  {sectionConfig.showIconLabels !== false && (
+                    <span className="text-xs font-medium text-center mt-1.5 leading-tight max-w-[110px] break-words" style={textOnAccent}>
+                      {asp.name}
+                    </span>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
@@ -101,9 +110,23 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
         <SimCardLeftSection title={titleLifestyles}>
           {profile.lifestyles.length > 0 ? (
             <div className="flex flex-wrap gap-2 justify-center">
-              {profile.lifestyles.map((iconUrl, i) => (
-                <img key={i} src={iconUrl} alt="" className="w-16 h-16 object-contain" />
-              ))}
+              {profile.lifestyles.map((iconUrl, i) => {
+                const option = LIFESTYLE_OPTIONS.find((l) => l.icon === iconUrl);
+                const label = option?.name ?? 'Lifestyle';
+                return (
+                  <div
+                    key={i}
+                    className={`flex flex-col items-center ${sectionConfig.showIconLabels !== false ? 'min-w-[80px]' : ''}`}
+                  >
+                    <img src={iconUrl} alt={label} className="w-16 h-16 object-contain" />
+                    {sectionConfig.showIconLabels !== false && (
+                      <span className="text-xs font-medium text-center mt-1.5 leading-tight max-w-[110px] break-words" style={textOnAccent}>
+                        {label}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <span className="text-base" style={textOnAccentMuted}>-</span>
@@ -114,8 +137,17 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
       {sectionConfig.publicImage.enabled && (
         <SimCardLeftSection title={titlePublicImage}>
           {profile.publicImage ? (
-            <div className="flex justify-center">
-              <img src={profile.publicImage} alt="" className="w-16 h-16 object-contain" />
+            <div className="flex flex-col items-center">
+              <img
+                src={profile.publicImage}
+                alt={PUBLIC_IMAGE_OPTIONS.find((p) => p.icon === profile.publicImage)?.name ?? 'Public image'}
+                className="w-16 h-16 object-contain"
+              />
+              {sectionConfig.showIconLabels !== false && (
+                <span className="text-xs font-medium text-center mt-1.5 leading-tight max-w-[110px] break-words" style={textOnAccent}>
+                  {PUBLIC_IMAGE_OPTIONS.find((p) => p.icon === profile.publicImage)?.name ?? 'Public Image'}
+                </span>
+              )}
             </div>
           ) : (
             <span className="text-base italic" style={textOnAccentMuted}>None</span>

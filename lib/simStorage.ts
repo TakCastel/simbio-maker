@@ -88,8 +88,8 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
       ? splitChildren(childrenRaw)
       : [];
   const genealogy = {
-    father: typeof g.father === 'string' ? g.father : '',
-    mother: typeof g.mother === 'string' ? g.mother : '',
+    parent1: typeof g.parent1 === 'string' ? g.parent1 : typeof g.father === 'string' ? g.father : '',
+    parent2: typeof g.parent2 === 'string' ? g.parent2 : typeof g.mother === 'string' ? g.mother : '',
     spouse: typeof g.spouse === 'string' ? g.spouse : '',
     siblings: typeof g.siblings === 'string' ? g.siblings : '',
     children,
@@ -107,6 +107,7 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
     firstName: String(raw.firstName),
     lastName: String(raw.lastName),
     generation: String(raw.generation),
+    pronouns: typeof (raw as { pronouns?: string }).pronouns === 'string' ? (raw as { pronouns: string }).pronouns : undefined,
     biography: typeof raw.biography === 'string' ? raw.biography : '',
     // Les blob: URLs ne survivent pas au rechargement ou à un autre domaine (prod) → les ignorer
     avatarUrl:
