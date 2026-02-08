@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Code } from 'lucide-react';
+import { Heart, Code, Github } from 'lucide-react';
 
 export default function PageFooter() {
   return (
@@ -25,6 +25,17 @@ export default function PageFooter() {
         >
           <Code size={14} />
           <span>Studio Castel</span>
+        </a>
+        <span className="hidden sm:inline text-slate-300" aria-hidden>·</span>
+        <a
+          href="https://github.com/TakCastel/simbio-maker"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 transition-colors hover:text-slate-700"
+          style={{ color: 'var(--color-primary-dark)' }}
+        >
+          <Github size={14} />
+          <span>GitHub</span>
         </a>
       </div>
     </footer>
