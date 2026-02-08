@@ -939,6 +939,7 @@ export const EMPTY_PROFILE = {
   lastName: '',
   generation: '',
   avatarUrl: null as string | null,
+  biography: '',
   traits: [],
   skills: [],
   aspirations: [],

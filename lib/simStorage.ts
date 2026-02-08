@@ -11,6 +11,7 @@ function hasSimProfileShape(obj: unknown): obj is Record<string, unknown> {
     typeof o.firstName === 'string' &&
     typeof o.lastName === 'string' &&
     typeof o.generation === 'string' &&
+    (typeof o.biography === 'string' || o.biography === undefined) &&
     Array.isArray(o.traits) &&
     Array.isArray(o.skills) &&
     Array.isArray(o.aspirations) &&
@@ -106,6 +107,7 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
     firstName: String(raw.firstName),
     lastName: String(raw.lastName),
     generation: String(raw.generation),
+    biography: typeof raw.biography === 'string' ? raw.biography : '',
     // Les blob: URLs ne survivent pas au rechargement ou à un autre domaine (prod) → les ignorer
     avatarUrl:
       typeof raw.avatarUrl === 'string' && !raw.avatarUrl.startsWith('blob:')

@@ -3,6 +3,7 @@ import { SimProfile } from '@/types';
 import Tooltip from '@/components/Tooltip';
 import { DEGREE_OPTIONS } from '@/constants';
 import { useCardTheme } from './CardThemeContext';
+import { useSectionConfig, useSectionTitle } from './SectionConfigContext';
 import SimCardAvatar from './SimCardAvatar';
 import SimCardLeftSection from './SimCardLeftSection';
 
@@ -15,8 +16,15 @@ interface SimCardLeftColumnProps {
  */
 export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
   const { accent, titleBarText } = useCardTheme();
+  const sectionConfig = useSectionConfig();
   const textOnAccent = { color: titleBarText };
   const textOnAccentMuted = { color: titleBarText, opacity: 0.85 };
+
+  const titleAspirations = useSectionTitle('aspirations');
+  const titleDegrees = useSectionTitle('degrees');
+  const titleCareer = useSectionTitle('career');
+  const titleLifestyles = useSectionTitle('lifestyles');
+  const titlePublicImage = useSectionTitle('publicImage');
 
   return (
     <div
@@ -27,33 +35,36 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
         <SimCardAvatar avatarUrl={profile.avatarUrl} />
       </div>
 
-      <SimCardLeftSection title="Completed aspirations">
-        {profile.aspirations.length > 0 ? (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {profile.aspirations.map((asp, i) => (
-              <Tooltip
-                key={i}
-                label={asp.name}
-                description={asp.description}
-                source={asp.category ? `Aspiration · ${asp.category}` : undefined}
-                headerLabel="Aspiration"
-              >
-                <img
-                  src={asp.icon}
-                  alt={asp.name}
-                  className="w-16 h-16 object-contain"
-                />
-              </Tooltip>
-            ))}
-          </div>
-        ) : (
-          <span className="text-base italic" style={textOnAccentMuted}>None</span>
-        )}
-      </SimCardLeftSection>
+      {sectionConfig.aspirations.enabled && (
+        <SimCardLeftSection title={titleAspirations}>
+          {profile.aspirations.length > 0 ? (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {profile.aspirations.map((asp, i) => (
+                <Tooltip
+                  key={i}
+                  label={asp.name}
+                  description={asp.description}
+                  source={asp.category ? `Aspiration · ${asp.category}` : undefined}
+                  headerLabel="Aspiration"
+                >
+                  <img
+                    src={asp.icon}
+                    alt={asp.name}
+                    className="w-16 h-16 object-contain"
+                  />
+                </Tooltip>
+              ))}
+            </div>
+          ) : (
+            <span className="text-base italic" style={textOnAccentMuted}>None</span>
+          )}
+        </SimCardLeftSection>
+      )}
 
-      <SimCardLeftSection title="Degrees">
-        {profile.degrees.length > 0 ? (
-          <div className="sim-card-degrees-content flex flex-col gap-1.5 w-full">
+      {sectionConfig.degrees.enabled && (
+        <SimCardLeftSection title={titleDegrees}>
+          {profile.degrees.length > 0 ? (
+            <div className="sim-card-degrees-content flex flex-col gap-1.5 w-full">
             {profile.degrees.map((iconUrl, i) => {
               const degree = DEGREE_OPTIONS.find((d) => d.icon === iconUrl);
               const label = degree?.name ?? 'Degree';
@@ -65,45 +76,52 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
               );
             })}
           </div>
-        ) : (
-          <span className="text-base" style={textOnAccentMuted}>-</span>
-        )}
-      </SimCardLeftSection>
+          ) : (
+            <span className="text-base" style={textOnAccentMuted}>-</span>
+          )}
+        </SimCardLeftSection>
+      )}
 
-      <SimCardLeftSection title="Career">
-        <div className="flex flex-col items-center gap-1">
-          <img
-            src={profile.career.icon}
-            alt=""
-            className="w-16 h-16 object-contain"
-          />
-          <span className="text-lg font-semibold text-center" style={textOnAccent}>
-            {profile.career.name}
-          </span>
-        </div>
-      </SimCardLeftSection>
-
-      <SimCardLeftSection title="Lifestyles">
-        {profile.lifestyles.length > 0 ? (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {profile.lifestyles.map((iconUrl, i) => (
-              <img key={i} src={iconUrl} alt="" className="w-16 h-16 object-contain" />
-            ))}
+      {sectionConfig.career.enabled && (
+        <SimCardLeftSection title={titleCareer}>
+          <div className="flex flex-col items-center gap-1">
+            <img
+              src={profile.career.icon}
+              alt=""
+              className="w-16 h-16 object-contain"
+            />
+            <span className="text-lg font-semibold text-center" style={textOnAccent}>
+              {profile.career.name}
+            </span>
           </div>
-        ) : (
-          <span className="text-base" style={textOnAccentMuted}>-</span>
-        )}
-      </SimCardLeftSection>
+        </SimCardLeftSection>
+      )}
 
-      <SimCardLeftSection title="Public Image">
-        {profile.publicImage ? (
-          <div className="flex justify-center">
-            <img src={profile.publicImage} alt="" className="w-16 h-16 object-contain" />
-          </div>
-        ) : (
-          <span className="text-base italic" style={textOnAccentMuted}>None</span>
-        )}
-      </SimCardLeftSection>
+      {sectionConfig.lifestyles.enabled && (
+        <SimCardLeftSection title={titleLifestyles}>
+          {profile.lifestyles.length > 0 ? (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {profile.lifestyles.map((iconUrl, i) => (
+                <img key={i} src={iconUrl} alt="" className="w-16 h-16 object-contain" />
+              ))}
+            </div>
+          ) : (
+            <span className="text-base" style={textOnAccentMuted}>-</span>
+          )}
+        </SimCardLeftSection>
+      )}
+
+      {sectionConfig.publicImage.enabled && (
+        <SimCardLeftSection title={titlePublicImage}>
+          {profile.publicImage ? (
+            <div className="flex justify-center">
+              <img src={profile.publicImage} alt="" className="w-16 h-16 object-contain" />
+            </div>
+          ) : (
+            <span className="text-base italic" style={textOnAccentMuted}>None</span>
+          )}
+        </SimCardLeftSection>
+      )}
     </div>
   );
 }

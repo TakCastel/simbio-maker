@@ -170,6 +170,17 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
             </div>
 
             <div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Biography</label>
+              <textarea
+                value={profile.biography}
+                onChange={(e) => setProfile({ ...profile, biography: e.target.value })}
+                placeholder="Describe your Sim in a few lines…"
+                rows={4}
+                className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow resize-y min-h-[80px]"
+              />
+            </div>
+
+            <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Career</label>
               <div className="flex flex-wrap gap-2">
                 {CAREER_ICONS.map((c) => (

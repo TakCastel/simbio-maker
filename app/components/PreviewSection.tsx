@@ -4,13 +4,16 @@ import React, { useRef } from 'react';
 import { Download, ImageIcon } from 'lucide-react';
 import SimsCard from '@/components/SimsCard';
 import { CardThemeProvider } from '@/components/sim-card/CardThemeContext';
+import { SectionConfigProvider } from '@/components/sim-card/SectionConfigContext';
 import ZoomableCard from '@/app/components/ZoomableCard';
 import { SimProfile } from '@/types';
 import type { CardTheme } from '@/lib/themeUtils';
+import type { CardSectionConfig } from '@/types';
 
 interface PreviewSectionProps {
   profile: SimProfile;
   cardTheme: CardTheme;
+  sectionConfig: CardSectionConfig;
   isDownloading: boolean;
   onDownloadStart: () => void;
   onDownloadEnd: () => void;
@@ -19,6 +22,7 @@ interface PreviewSectionProps {
 export default function PreviewSection({
   profile,
   cardTheme,
+  sectionConfig,
   isDownloading,
   onDownloadStart,
   onDownloadEnd,
@@ -308,7 +312,9 @@ export default function PreviewSection({
               <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
                 <div className="w-full rounded-xl overflow-hidden shrink-0">
                   <CardThemeProvider theme={cardTheme}>
-                    <SimsCard ref={cardRef} profile={profile} />
+                    <SectionConfigProvider config={sectionConfig}>
+                      <SimsCard ref={cardRef} profile={profile} />
+                    </SectionConfigProvider>
                   </CardThemeProvider>
                 </div>
               </div>

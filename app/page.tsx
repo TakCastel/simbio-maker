@@ -3,14 +3,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { INITIAL_PROFILE } from '@/constants';
 import { SimProfile } from '@/types';
+import type { CardSectionConfig } from '@/types';
 import { loadProfileFromStorage, saveProfileToStorage } from '@/lib/simStorage';
 import { loadCardThemeFromStorage, saveCardThemeToStorage } from '@/lib/cardThemeStorage';
+import {
+  loadSectionConfigFromStorage,
+  saveSectionConfigToStorage,
+  buildDefaultSectionConfig,
+} from '@/lib/sectionConfigStorage';
 import { buildCardTheme, DEFAULT_CARD_ACCENT, type CardTheme } from '@/lib/themeUtils';
 import PageHeader from './components/PageHeader';
 import PageFooter from './components/PageFooter';
 import EditorPanel from './components/EditorPanel';
 import PreviewSection from './components/PreviewSection';
 import ThemePicker from '@/components/ThemePicker';
+import SectionsMenu from '@/components/SectionsMenu';
 
 export default function Home() {
   const [profile, setProfile] = useState<SimProfile>(INITIAL_PROFILE);
@@ -18,6 +25,7 @@ export default function Home() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [cardTheme, setCardTheme] = useState<CardTheme>(() => buildCardTheme(DEFAULT_CARD_ACCENT));
+  const [sectionConfig, setSectionConfig] = useState<CardSectionConfig>(() => buildDefaultSectionConfig());
   const headerRef = useRef<HTMLElement>(null);
 
   // Hauteur du header pour le bouton flottant (espacement = gap-4 sous le header)
@@ -33,11 +41,12 @@ export default function Home() {
     return () => ro.disconnect();
   }, []);
 
-  // Restore profile from localStorage on first load
+  // Restore profile and config from localStorage on first load
   useEffect(() => {
     const stored = loadProfileFromStorage();
     if (stored) setProfile(stored);
     setCardTheme(loadCardThemeFromStorage());
+    setSectionConfig(loadSectionConfigFromStorage());
     setHydrated(true);
   }, []);
 
@@ -47,11 +56,15 @@ export default function Home() {
     saveProfileToStorage(profile);
   }, [profile, hydrated]);
 
-  // Persist card theme on change
+  // Persist card theme and section config on change
   useEffect(() => {
     if (!hydrated) return;
     saveCardThemeToStorage(cardTheme);
   }, [cardTheme, hydrated]);
+  useEffect(() => {
+    if (!hydrated) return;
+    saveSectionConfigToStorage(sectionConfig);
+  }, [sectionConfig, hydrated]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -67,6 +80,7 @@ export default function Home() {
         <PreviewSection
           profile={profile}
           cardTheme={cardTheme}
+          sectionConfig={sectionConfig}
           isDownloading={isDownloading}
           onDownloadStart={() => setIsDownloading(true)}
           onDownloadEnd={() => setIsDownloading(false)}
@@ -74,6 +88,7 @@ export default function Home() {
       </main>
 
       <ThemePicker theme={cardTheme} onThemeChange={setCardTheme} />
+      <SectionsMenu config={sectionConfig} onConfigChange={setSectionConfig} />
 
       <EditorPanel
         isOpen={isEditorOpen}

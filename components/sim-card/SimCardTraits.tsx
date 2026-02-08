@@ -12,18 +12,20 @@ function formatTraitSource(type: TraitCategory): string {
 
 interface SimCardTraitsProps {
   traits: Trait[];
+  /** Section title (default: "Traits") */
+  title?: string;
 }
 
 /**
  * Traits grid: 3 rows x 5 columns = 15 slots. Transparent icons, no background or border.
  * Tooltip on icon hover only (group/trait).
  */
-export default function SimCardTraits({ traits }: SimCardTraitsProps) {
+export default function SimCardTraits({ traits, title = 'Traits' }: SimCardTraitsProps) {
   const { accent, titleBarText } = useCardTheme();
   return (
     <div className="mb-4 overflow-hidden bg-white">
       <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: accent }}>
-        <h3 className="font-title font-semibold text-[15px] leading-none uppercase tracking-[0.2em]" style={{ color: titleBarText }}>TRAITS</h3>
+        <h3 className="font-title font-semibold text-[15px] leading-none uppercase tracking-[0.2em]" style={{ color: titleBarText }}>{title.toUpperCase()}</h3>
       </div>
       <div className="px-5 py-2.5 bg-white">
       <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${TRAITS_GRID_COLS}, minmax(0, 1fr))` }}>

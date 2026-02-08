@@ -74,11 +74,32 @@ export interface Genealogy {
   children: string[];
 }
 
+/** Section IDs for card layout (visibility + custom title) */
+export type SectionId =
+  | 'aspirations'
+  | 'degrees'
+  | 'career'
+  | 'lifestyles'
+  | 'publicImage'
+  | 'biography'
+  | 'traits'
+  | 'skills'
+  | 'genealogy';
+
+export interface SectionConfigItem {
+  enabled: boolean;
+  title: string; // custom title; empty = use default
+}
+
+export type CardSectionConfig = Record<SectionId, SectionConfigItem>;
+
 export interface SimProfile {
   firstName: string;
   lastName: string;
   generation: string; // e.g., "1st Generation"
   avatarUrl: string | null;
+  /** Biography text shown below the header (name, generation) */
+  biography: string;
   traits: Trait[];
   skills: Skill[];
   aspirations: Aspiration[];
