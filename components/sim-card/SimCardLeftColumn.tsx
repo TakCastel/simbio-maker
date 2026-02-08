@@ -2,7 +2,7 @@ import React from 'react';
 import { SimProfile } from '@/types';
 import Tooltip from '@/components/Tooltip';
 import { DEGREE_OPTIONS } from '@/constants';
-import { TEAL } from './constants';
+import { useCardTheme } from './CardThemeContext';
 import SimCardAvatar from './SimCardAvatar';
 import SimCardLeftSection from './SimCardLeftSection';
 
@@ -14,10 +14,14 @@ interface SimCardLeftColumnProps {
  * Left column: solid #C2E2DF background, flush top/bottom/left. Avatar then sections with white title bar (centred black text) and content (icons, no background).
  */
 export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
+  const { accent, titleBarText } = useCardTheme();
+  const textOnAccent = { color: titleBarText };
+  const textOnAccentMuted = { color: titleBarText, opacity: 0.85 };
+
   return (
     <div
       className="sim-card-left-column w-2/5 shrink-0 flex flex-col pt-0 pb-0 gap-1 px-5"
-      style={{ backgroundColor: TEAL }}
+      style={{ backgroundColor: accent }}
     >
       <div className="w-full flex justify-center pt-10 pb-8">
         <SimCardAvatar avatarUrl={profile.avatarUrl} />
@@ -27,7 +31,13 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
         {profile.aspirations.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">
             {profile.aspirations.map((asp, i) => (
-              <Tooltip key={i} label={asp.name}>
+              <Tooltip
+                key={i}
+                label={asp.name}
+                description={asp.description}
+                source={asp.category ? `Aspiration · ${asp.category}` : undefined}
+                headerLabel="Aspiration"
+              >
                 <img
                   src={asp.icon}
                   alt={asp.name}
@@ -37,7 +47,7 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
             ))}
           </div>
         ) : (
-          <span className="text-black/70 text-base italic">None</span>
+          <span className="text-base italic" style={textOnAccentMuted}>None</span>
         )}
       </SimCardLeftSection>
 
@@ -50,13 +60,13 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
               return (
                 <div key={i} className="sim-card-degree-row flex items-center gap-3">
                   <img src={iconUrl} alt="" className="w-10 h-10 object-contain shrink-0" />
-                  <span className="sim-card-degree-label text-black text-sm font-medium text-left flex-1 min-w-0 truncate">{label}</span>
+                  <span className="sim-card-degree-label text-sm font-medium text-left flex-1 min-w-0 truncate" style={textOnAccent}>{label}</span>
                 </div>
               );
             })}
           </div>
         ) : (
-          <span className="text-black/70 text-base">-</span>
+          <span className="text-base" style={textOnAccentMuted}>-</span>
         )}
       </SimCardLeftSection>
 
@@ -67,7 +77,7 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
             alt=""
             className="w-16 h-16 object-contain"
           />
-          <span className="text-black text-lg font-semibold text-center">
+          <span className="text-lg font-semibold text-center" style={textOnAccent}>
             {profile.career.name}
           </span>
         </div>
@@ -81,7 +91,7 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
             ))}
           </div>
         ) : (
-          <span className="text-black/70 text-base">-</span>
+          <span className="text-base" style={textOnAccentMuted}>-</span>
         )}
       </SimCardLeftSection>
 
@@ -91,7 +101,7 @@ export default function SimCardLeftColumn({ profile }: SimCardLeftColumnProps) {
             <img src={profile.publicImage} alt="" className="w-16 h-16 object-contain" />
           </div>
         ) : (
-          <span className="text-black/70 text-base italic">None</span>
+          <span className="text-base italic" style={textOnAccentMuted}>None</span>
         )}
       </SimCardLeftSection>
     </div>

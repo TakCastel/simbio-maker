@@ -78,12 +78,20 @@ export function normalizeImportedProfile(raw: unknown): SimProfile {
     return { ...EMPTY_PROFILE };
   }
   const g = raw.genealogy as Record<string, unknown>;
+  const childrenRaw = g.children;
+  const splitChildren = (str: string) =>
+    str.split(/\s*[,\uFF0C;\n\r]+\s*/).map((part) => part.trim()).filter(Boolean);
+  const children = Array.isArray(childrenRaw)
+    ? (childrenRaw as unknown[]).map((c) => String(c).trim()).filter(Boolean)
+    : typeof childrenRaw === 'string'
+      ? splitChildren(childrenRaw)
+      : [];
   const genealogy = {
     father: typeof g.father === 'string' ? g.father : '',
     mother: typeof g.mother === 'string' ? g.mother : '',
     spouse: typeof g.spouse === 'string' ? g.spouse : '',
     siblings: typeof g.siblings === 'string' ? g.siblings : '',
-    children: Array.isArray(g.children) ? (g.children as string[]) : [],
+    children,
   };
   const career =
     raw.career && typeof (raw.career as { name?: string }).name === 'string' && typeof (raw.career as { icon?: string }).icon === 'string'

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Trait, TraitCategory } from '@/types';
 import Tooltip from '@/components/Tooltip';
-import { TEAL, TRAITS_GRID_COLS, TRAITS_MAX } from './constants';
+import { TRAITS_GRID_COLS, TRAITS_MAX } from './constants';
+import { useCardTheme } from './CardThemeContext';
 
 /** Format trait category for tooltip "From ..." line */
 function formatTraitSource(type: TraitCategory): string {
@@ -18,10 +19,11 @@ interface SimCardTraitsProps {
  * Tooltip on icon hover only (group/trait).
  */
 export default function SimCardTraits({ traits }: SimCardTraitsProps) {
+  const { accent, titleBarText } = useCardTheme();
   return (
     <div className="mb-4 overflow-hidden bg-white">
-      <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: TEAL }}>
-        <h3 className="font-title font-semibold text-black text-[15px] leading-none uppercase tracking-[0.2em]">TRAITS</h3>
+      <div className="sim-card-title-bar w-full py-2.5 px-6 flex items-center justify-center min-h-[42px]" style={{ backgroundColor: accent }}>
+        <h3 className="font-title font-semibold text-[15px] leading-none uppercase tracking-[0.2em]" style={{ color: titleBarText }}>TRAITS</h3>
       </div>
       <div className="px-5 py-2.5 bg-white">
       <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${TRAITS_GRID_COLS}, minmax(0, 1fr))` }}>

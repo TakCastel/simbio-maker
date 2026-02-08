@@ -8,6 +8,8 @@ interface TooltipProps {
   description?: string;
   /** Optional "From ..." source line (e.g. "From Loner Trait") */
   source?: string;
+  /** Header label when tooltip has body (e.g. "Trait" or "Aspiration"). Default: "Trait" */
+  headerLabel?: string;
   children: React.ReactElement;
 }
 
@@ -20,7 +22,7 @@ const HEADER_GRADIENT = 'linear-gradient(180deg, #1a9b4a 0%, #0d8b38 100%)';
  * Sims-style tooltip: dark green header, light grey body, downward pointer.
  * Rendered in a portal so it stays on top.
  */
-export default function Tooltip({ label, description, source, children }: TooltipProps) {
+export default function Tooltip({ label, description, source, headerLabel = 'Trait', children }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +79,7 @@ export default function Tooltip({ label, description, source, children }: Toolti
                 style={{ background: HEADER_GRADIENT }}
               >
                 <span className="font-title text-white text-xs font-semibold uppercase tracking-wide truncate">
-                  {hasBody ? 'Trait' : label}
+                  {hasBody ? headerLabel : label}
                 </span>
                 {hasBody ? (
                   <span className="text-white/90 text-xs font-medium truncate">{label}</span>

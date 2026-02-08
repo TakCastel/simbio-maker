@@ -8,6 +8,8 @@
   /* Darker variant for buttons / links (contrast on light bg) */
   --color-primary-dark: #0d8b38;
   --page-bg: #f8fafc;
+  /* Set by JS from header height; fallback for first paint */
+  --header-height: 5rem;
 }
 
 body {

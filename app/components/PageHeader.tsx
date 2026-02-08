@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, forwardRef } from 'react';
 import { Settings2, Download, Upload } from 'lucide-react';
 import { SimProfile } from '@/types';
 import { downloadProfileAsJson, normalizeImportedProfile } from '@/lib/simStorage';
@@ -12,7 +12,10 @@ interface PageHeaderProps {
   onImportProfile: (profile: SimProfile) => void;
 }
 
-export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onImportProfile }: PageHeaderProps) {
+const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function PageHeader(
+  { isEditorOpen, onToggleEditor, profile, onImportProfile },
+  ref
+) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExportJson = () => {
@@ -41,7 +44,7 @@ export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onIm
   };
 
   return (
-    <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-sm sticky top-0 z-30">
+    <header ref={ref} className="border-b border-slate-200/80 bg-white/90 backdrop-blur-sm sticky top-0 z-30">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <img
@@ -98,4 +101,5 @@ export default function PageHeader({ isEditorOpen, onToggleEditor, profile, onIm
       </div>
     </header>
   );
-}
+});
+export default PageHeader;

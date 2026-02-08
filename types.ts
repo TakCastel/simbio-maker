@@ -57,6 +57,8 @@ export interface Aspiration {
   icon: string;
   /** Wiki category for grouped display (Animal, Athletic, Creativity, etc.) */
   category?: string;
+  /** Short description for tooltip (Sims Fandom wiki) */
+  description?: string;
 }
 
 export interface Career {

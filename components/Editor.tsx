@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SimProfile, Trait } from '@/types';
 import {
   AVAILABLE_TRAITS,
@@ -10,14 +10,32 @@ import {
   PUBLIC_IMAGE_OPTIONS,
 } from '@/constants';
 import { Camera } from 'lucide-react';
+import Tooltip from '@/components/Tooltip';
 
 interface EditorProps {
   profile: SimProfile;
   setProfile: React.Dispatch<React.SetStateAction<SimProfile>>;
 }
 
+/** Sépare une chaîne en noms d'enfants (virgule, point-virgule ou retours à la ligne). Préserve les espaces dans chaque nom. */
+function parseChildrenText(raw: string): string[] {
+  return raw
+    .split(/\s*[,\uFF0C;\n\r]+\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
   const [activeTab, setActiveTab] = useState<'identity' | 'traits' | 'skills' | 'genealogy'>('identity');
+  const [childrenText, setChildrenText] = useState('');
+  const childrenInputFocusedRef = useRef(false);
+
+  // Synchroniser le champ texte avec le profil quand il change (ex. chargement) et que le champ n'est pas focalisé
+  useEffect(() => {
+    if (!childrenInputFocusedRef.current) {
+      setChildrenText(profile.genealogy.children.join(', '));
+    }
+  }, [profile.genealogy.children]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -322,22 +340,29 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                         {byCategory.get(cat)!.map((asp) => {
                           const isSelected = profile.aspirations.some((a) => a.id === asp.id);
                           return (
-                            <button
+                            <Tooltip
                               key={asp.id}
-                              onClick={() =>
-                                setProfile((prev) => {
-                                  const exists = prev.aspirations.find((a) => a.id === asp.id);
-                                  if (exists) return { ...prev, aspirations: prev.aspirations.filter((a) => a.id !== asp.id) };
-                                  return { ...prev, aspirations: [...prev.aspirations, asp] };
-                                })
-                              }
-                              className={`px-3 py-2 rounded-lg border-2 flex items-center gap-2 transition-all ${
-                                isSelected ? 'bg-yellow-100 border-yellow-400' : 'bg-white border-slate-200 hover:bg-slate-50'
-                              }`}
+                              label={asp.name}
+                              description={asp.description}
+                              source={asp.category ? `Aspiration · ${asp.category}` : undefined}
+                              headerLabel="Aspiration"
                             >
-                              <img src={asp.icon} alt="" className="w-6 h-6 object-contain" />
-                              <span className="text-xs font-bold text-slate-700">{asp.name}</span>
-                            </button>
+                              <button
+                                onClick={() =>
+                                  setProfile((prev) => {
+                                    const exists = prev.aspirations.find((a) => a.id === asp.id);
+                                    if (exists) return { ...prev, aspirations: prev.aspirations.filter((a) => a.id !== asp.id) };
+                                    return { ...prev, aspirations: [...prev.aspirations, asp] };
+                                  })
+                                }
+                                className={`px-3 py-2 rounded-lg border-2 flex items-center gap-2 transition-all ${
+                                  isSelected ? 'bg-yellow-100 border-yellow-400' : 'bg-white border-slate-200 hover:bg-slate-50'
+                                }`}
+                              >
+                                <img src={asp.icon} alt="" className="w-6 h-6 object-contain" />
+                                <span className="text-xs font-bold text-slate-700">{asp.name}</span>
+                              </button>
+                            </Tooltip>
                           );
                         })}
                       </div>
@@ -398,7 +423,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                 <input
                   type="text"
                   value={profile.genealogy.father}
-                  onChange={(e) => setProfile({ ...profile, genealogy: { ...profile.genealogy, father: e.target.value } })}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, father: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>
@@ -407,7 +432,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                 <input
                   type="text"
                   value={profile.genealogy.mother}
-                  onChange={(e) => setProfile({ ...profile, genealogy: { ...profile.genealogy, mother: e.target.value } })}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, mother: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>
@@ -416,7 +441,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                 <input
                   type="text"
                   value={profile.genealogy.spouse}
-                  onChange={(e) => setProfile({ ...profile, genealogy: { ...profile.genealogy, spouse: e.target.value } })}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, spouse: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>
@@ -425,7 +450,7 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
                 <input
                   type="text"
                   value={profile.genealogy.siblings}
-                  onChange={(e) => setProfile({ ...profile, genealogy: { ...profile.genealogy, siblings: e.target.value } })}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, genealogy: { ...prev.genealogy, siblings: e.target.value } }))}
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 outline-none transition-shadow"
                 />
               </div>
@@ -433,13 +458,19 @@ const Editor: React.FC<EditorProps> = ({ profile, setProfile }) => {
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Children (comma separated)</label>
               <textarea
-                value={profile.genealogy.children.join(', ')}
-                onChange={(e) =>
-                  setProfile({
-                    ...profile,
-                    genealogy: { ...profile.genealogy, children: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) },
-                  })
-                }
+                value={childrenText}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  setChildrenText(raw);
+                  const children = parseChildrenText(raw);
+                  setProfile((prev) => ({
+                    ...prev,
+                    genealogy: { ...prev.genealogy, children },
+                  }));
+                }}
+                onFocus={() => { childrenInputFocusedRef.current = true; }}
+                onBlur={() => { childrenInputFocusedRef.current = false; }}
+                placeholder="ex: Jean Pierre, Marie, Paul"
                 className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-slate-300 outline-none h-20"
               />
             </div>

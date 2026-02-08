@@ -3,11 +3,14 @@
 import React, { useRef } from 'react';
 import { Download, ImageIcon } from 'lucide-react';
 import SimsCard from '@/components/SimsCard';
+import { CardThemeProvider } from '@/components/sim-card/CardThemeContext';
 import ZoomableCard from '@/app/components/ZoomableCard';
 import { SimProfile } from '@/types';
+import type { CardTheme } from '@/lib/themeUtils';
 
 interface PreviewSectionProps {
   profile: SimProfile;
+  cardTheme: CardTheme;
   isDownloading: boolean;
   onDownloadStart: () => void;
   onDownloadEnd: () => void;
@@ -15,6 +18,7 @@ interface PreviewSectionProps {
 
 export default function PreviewSection({
   profile,
+  cardTheme,
   isDownloading,
   onDownloadStart,
   onDownloadEnd,
@@ -209,7 +213,7 @@ export default function PreviewSection({
     }
   };
 
-  /** Détecte si on est dans un navigateur intégré (réseaux sociaux, etc.) où le téléchargement programmatique est souvent bloqué. */
+  /** Detects if we're in an embedded browser (social, etc.) where programmatic download is often blocked. */
   const isInAppBrowser = (): boolean => {
     // Venant de Threads (referrer) ou ouvert depuis l’app Threads (UA peut ne pas contenir "threads")
     if (typeof document !== 'undefined' && document.referrer && document.referrer.toLowerCase().includes('threads.net')) {
@@ -249,12 +253,12 @@ export default function PreviewSection({
         link.click();
         document.body.removeChild(link);
 
-        // Dans les navigateurs intégrés (Facebook, Instagram, etc.), le download est souvent bloqué.
-        // On ouvre l'image dans un nouvel onglet pour que l'utilisateur puisse l'enregistrer manuellement.
+        // In embedded browsers (Facebook, Instagram, etc.), download is often blocked.
+        // Open the image in a new tab so the user can save it manually.
         if (isInAppBrowser()) {
           window.open(dataUrl, '_blank', 'noopener,noreferrer');
           alert(
-            "Dans ce navigateur, le téléchargement direct peut être bloqué. L'image s'est ouverte dans un nouvel onglet : utilisez le menu ou un appui long sur l'image pour l'enregistrer."
+            "In this browser, direct download may be blocked. The image has opened in a new tab: use the menu or long-press on the image to save it."
           );
         }
       } else {
@@ -267,7 +271,7 @@ export default function PreviewSection({
     }
   };
 
-  /** Ouvre l’image de la card dans un nouvel onglet via un lien blob (évite about:blank avec data URL). */
+  /** Opens the card image in a new tab via a blob link (avoids about:blank with data URL). */
   const handleViewImage = async () => {
     if (!cardRef.current) return;
     onDownloadStart();
@@ -303,7 +307,9 @@ export default function PreviewSection({
             <div className="w-full scale-max-width">
               <div className="w-full rounded-xl overflow-hidden shadow-lg border border-slate-300 bg-white flex justify-start">
                 <div className="w-full rounded-xl overflow-hidden shrink-0">
-                  <SimsCard ref={cardRef} profile={profile} />
+                  <CardThemeProvider theme={cardTheme}>
+                    <SimsCard ref={cardRef} profile={profile} />
+                  </CardThemeProvider>
                 </div>
               </div>
             </div>
